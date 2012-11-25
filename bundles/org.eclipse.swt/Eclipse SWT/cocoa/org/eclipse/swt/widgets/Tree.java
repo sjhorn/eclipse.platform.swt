@@ -345,7 +345,7 @@ static int checkStyle (int style) {
 	}
 	/* This platform is always FULL_SELECTION */
 	style |= SWT.FULL_SELECTION;
-	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
+	return checkBits (style, SWT.SINGLE, SWT.MULTI, SWT.SOURCE_LIST, 0, 0, 0);
 }
 
 protected void checkSubclass () {
@@ -621,6 +621,10 @@ void createHandle () {
 	dataCell = (NSTextFieldCell)new SWTImageTextCell ().alloc ().init ();
 	dataCell.setLineBreakMode(OS.NSLineBreakByTruncatingTail);
 	firstColumn.setDataCell (dataCell);
+	
+	if( (style & SWT.SOURCE_LIST) == SWT.SOURCE_LIST) {
+	    OS.objc_msgSend(widget.id, OS.sel_setSelectionHighlightStyle_, OS.NSTableViewSelectionHighlightStyleSourceList);
+	}
 	
 	scrollView = scrollWidget;
 	view = widget;
@@ -2105,6 +2109,12 @@ long /*int*/ outlineView_objectValueForTableColumn_byItem (long /*int*/ id, long
 boolean outlineView_isItemExpandable (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
 	if (item == 0) return true;
 	return ((TreeItem) display.getWidget (item)).itemCount != 0;
+}
+
+boolean outlineView_isGroupItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
+	if (item == 0) return false;
+	TreeItem treeItem = (TreeItem) display.getWidget (item);
+	return (treeItem.getStyle() & SWT.GROUP_ITEM) == SWT.GROUP_ITEM && treeItem.getParentItem() == null;
 }
 
 long /*int*/ outlineView_numberOfChildrenOfItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {

@@ -1758,6 +1758,26 @@ public class SWT {
 	public static final int VIRTUAL = 1 << 28;
 
 	/**
+     * Style constant to allow source list style for trees
+     * <p><b>Used By:</b><ul>
+     * <li><code>Tree</code></li>
+     * </ul></p>
+     * 
+     * @since 4.2
+     */
+	public static final int SOURCE_LIST = 1 << 30;
+	
+	/**
+     * Style constant to allow group item style for treeitems
+     * <p><b>Used By:</b><ul>
+     * <li><code>TreeItem</code></li>
+     * </ul></p>
+     * 
+     * @since 4.2
+     */
+    public static final int GROUP_ITEM = 1 << 1;
+	
+	/**
 	 * Style constant to indicate double buffering (value is 1&lt;&lt;29).
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>

@@ -2589,6 +2589,7 @@ void initClasses () {
 	OS.class_addMethod(cls, OS.sel_outlineViewSelectionIsChanging_, proc3, "@:@");
 	OS.class_addMethod(cls, OS.sel_outlineView_child_ofItem_, proc5, "@:@i@");
 	OS.class_addMethod(cls, OS.sel_outlineView_isItemExpandable_, proc4, "@:@@");
+	OS.class_addMethod(cls, OS.sel_outlineView_isGroupItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_outlineView_numberOfChildrenOfItem_, proc4, "@:@@");
 	OS.class_addMethod(cls, OS.sel_selectRowIndexes_byExtendingSelection_, proc4, "@:@Z");
 	OS.class_addMethod(cls, OS.sel_deselectRow_, proc3, "@:i");
@@ -5763,6 +5764,8 @@ static long /*int*/ windowProc(long /*int*/ id, long /*int*/ sel, long /*int*/ a
 		widget.tabView_didSelectTabViewItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_outlineView_isItemExpandable_) {
 		return widget.outlineView_isItemExpandable(id, sel, arg0, arg1) ? 1 : 0;
+	} else if (sel == OS.sel_outlineView_isGroupItem_) {
+		return widget.outlineView_isGroupItem(id, sel, arg0, arg1) ? 1 : 0;
 	} else if (sel == OS.sel_outlineView_numberOfChildrenOfItem_) {
 		return widget.outlineView_numberOfChildrenOfItem(id, sel, arg0, arg1);
 	} else if (sel == OS.sel_menu_willHighlightItem_) {

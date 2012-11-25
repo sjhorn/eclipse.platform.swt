@@ -2020,6 +2020,11 @@
 		<method selector="draggingSourceOperationMask" swt_gen="true">
 			<retval swt_gen="true"></retval>
 		</method>
+		<method selector="outlineView:isGroupItem:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
 		<method selector="outlineView:shouldEditTableColumn:item:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<arg swt_gen="true"></arg>
@@ -3388,6 +3393,10 @@
 			<retval swt_gen="true"></retval>
 		</method>
 		<method selector="setRowHeight:" swt_gen="true">
+			<arg swt_gen="true"></arg>
+			<retval swt_gen="true"></retval>
+		</method>
+		<method selector="setSelectionHighlightStyle:" swt_gen="true">
 			<arg swt_gen="true"></arg>
 			<retval swt_gen="true"></retval>
 		</method>
@@ -4871,6 +4880,7 @@
 	<enum name="NSTableViewDropOn" swt_gen="true"></enum>
 	<enum name="NSTableViewGridNone" swt_gen="true"></enum>
 	<enum name="NSTableViewNoColumnAutoresizing" swt_gen="true"></enum>
+	<enum name="NSTableViewSelectionHighlightStyleSourceList" swt_gen="true"></enum>
 	<enum name="NSTableViewSolidVerticalGridLineMask" swt_gen="true"></enum>
 	<enum name="NSTerminateCancel" swt_gen="true"></enum>
 	<enum name="NSTerminateNow" swt_gen="true"></enum>

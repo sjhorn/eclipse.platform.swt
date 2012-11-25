@@ -239,6 +239,10 @@ public void setRowHeight(double /*float*/ rowHeight) {
 	OS.objc_msgSend(this.id, OS.sel_setRowHeight_, rowHeight);
 }
 
+public void setSelectionHighlightStyle(long /*int*/ selectionHighlightStyle) {
+	OS.objc_msgSend(this.id, OS.sel_setSelectionHighlightStyle_, selectionHighlightStyle);
+}
+
 public void setUsesAlternatingRowBackgroundColors(boolean useAlternatingRowColors) {
 	OS.objc_msgSend(this.id, OS.sel_setUsesAlternatingRowBackgroundColors_, useAlternatingRowColors);
 }

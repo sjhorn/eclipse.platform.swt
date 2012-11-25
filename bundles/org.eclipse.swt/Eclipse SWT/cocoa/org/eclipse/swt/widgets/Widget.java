@@ -1210,6 +1210,10 @@ boolean outlineView_isItemExpandable(long /*int*/ id, long /*int*/ sel, long /*i
 	return false;
 }
 
+boolean outlineView_isGroupItem(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
+	return false;
+}
+
 long /*int*/ outlineView_numberOfChildrenOfItem(long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
 	return 0;
 }

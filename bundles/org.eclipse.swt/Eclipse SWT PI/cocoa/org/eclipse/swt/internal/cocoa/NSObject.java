@@ -62,6 +62,10 @@ public long /*int*/ draggingSourceOperationMask() {
 	return OS.objc_msgSend(this.id, OS.sel_draggingSourceOperationMask);
 }
 
+public boolean outlineView_isGroupItem_(NSOutlineView outlineView, id item) {
+	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_isGroupItem_, outlineView != null ? outlineView.id : 0, item != null ? item.id : 0);
+}
+
 public boolean outlineView(NSOutlineView outlineView, NSTableColumn tableColumn, id item) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldEditTableColumn_item_, outlineView != null ? outlineView.id : 0, tableColumn != null ? tableColumn.id : 0, item != null ? item.id : 0);
 }
@@ -70,7 +74,7 @@ public boolean outlineView(NSOutlineView outlineView, long /*int*/ columnIndex, 
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldReorderColumn_toColumn_, outlineView != null ? outlineView.id : 0, columnIndex, newColumnIndex);
 }
 
-public boolean outlineView(NSOutlineView outlineView, id item) {
+public boolean outlineView_shouldSelectItem_(NSOutlineView outlineView, id item) {
 	return OS.objc_msgSend_bool(this.id, OS.sel_outlineView_shouldSelectItem_, outlineView != null ? outlineView.id : 0, item != null ? item.id : 0);
 }
 
@@ -119,10 +123,6 @@ public boolean conformsToProtocol(Protocol aProtocol) {
 public id copy() {
 	long /*int*/ result = OS.objc_msgSend(this.id, OS.sel_copy);
 	return result != 0 ? new id(result) : null;
-}
-
-public void dealloc () {
-	OS.objc_msgSend (this.id, OS.sel_dealloc);
 }
 
 public NSString description() {
