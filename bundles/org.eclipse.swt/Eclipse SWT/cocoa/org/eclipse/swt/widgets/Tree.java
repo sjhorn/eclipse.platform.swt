@@ -2117,6 +2117,10 @@ boolean outlineView_isGroupItem (long /*int*/ id, long /*int*/ sel, long /*int*/
 	return (treeItem.getStyle() & SWT.GROUP_ITEM) == SWT.GROUP_ITEM && treeItem.getParentItem() == null;
 }
 
+boolean outlineView_shouldSelectItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
+    return outlineView_isGroupItem(id, sel, outlineView, item) != true;
+}
+
 long /*int*/ outlineView_numberOfChildrenOfItem (long /*int*/ id, long /*int*/ sel, long /*int*/ outlineView, long /*int*/ item) {
 	if (item == 0) return itemCount;
 	return ((TreeItem) display.getWidget (item)).itemCount;
