@@ -287,6 +287,9 @@ int calculateWidth (int index, GC gc) {
 	if (index == 0) {
 		NSOutlineView outlineView = (NSOutlineView)parent.view;
 		width += outlineView.indentationPerLevel () * (1 + outlineView.levelForItem (handle));
+		if( (parent.style & SWT.SOURCE_LIST) == SWT.SOURCE_LIST) {
+		    width += 3; // avoid ellipses 
+		}
 		this.width = width;
 	}
 	return width;
