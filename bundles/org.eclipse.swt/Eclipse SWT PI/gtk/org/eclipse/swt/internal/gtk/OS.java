@@ -410,6 +410,7 @@ public class OS extends C {
 	public static final int GTK_TREE_VIEW_GRID_LINES_HORIZONTAL = 1;
 	public static final int GTK_TREE_VIEW_GRID_LINES_VERTICAL = 2;
 	public static final int GTK_TREE_VIEW_GRID_LINES_BOTH = 3;
+	public static final int GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = 600;
 	public static final int GDK_UNMAP = 15;
 	public static final int GTK_UNIT_PIXEL = 0;
 	public static final int GTK_UNIT_POINTS = 1;
@@ -522,6 +523,7 @@ public class OS extends C {
 	public static final byte[] key_press_event = ascii("key-press-event");
 	public static final byte[] key_release_event = ascii("key-release-event");
 	public static final byte[] leave_notify_event = ascii("leave-notify-event");
+	public static final byte[] link_color = ascii("link-color");
 	public static final byte[] map = ascii("map");
 	public static final byte[] map_event = ascii("map-event");
 	public static final byte[] mnemonic_activate = ascii("mnemonic-activate");
@@ -3301,7 +3303,9 @@ public static final long /*int*/ g_type_register_static (long /*int*/ parent_typ
 		lock.unlock();
 	}
 }
-/** @param vtable cast=(GThreadFunctions *) */
+/** 
+ * @param vtable cast=(GThreadFunctions *) 
+ */
 public static final native void _g_thread_init(long /*int*/ vtable);
 public static final void g_thread_init(long /*int*/ vtable) {
 	lock.lock();
@@ -5254,8 +5258,6 @@ public static final int gdk_text_property_to_utf8_list_for_display  (long /*int*
 		lock.unlock();
 	}
 }
-public static final native void gdk_threads_init ();
-public static final native void gdk_threads_enter ();
 public static final native void gdk_threads_leave ();
 /**
  * @method flags=dynamic
@@ -6511,6 +6513,32 @@ public static final long /*int*/ gtk_color_selection_dialog_new(byte[] title) {
 		lock.unlock();
 	}
 }
+/** 
+ * @method flags=dynamic
+ * @param title cast=(const gchar *)
+ * @param parent cast=(GtkWindow *)
+ */
+public static final native long /*int*/ _gtk_color_chooser_dialog_new (byte[] title, long /*int*/ parent);
+public static final long /*int*/  gtk_color_chooser_dialog_new (byte[] title, long /*int*/ parent) {
+	lock.lock();
+	try {
+		return _gtk_color_chooser_dialog_new (title, parent);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @method flags=dynamic
+ */
+public static final native void _gtk_color_chooser_set_use_alpha (long /*int*/ chooser, boolean use_alpha);
+public static final void  gtk_color_chooser_set_use_alpha (long /*int*/ chooser, boolean use_alpha) {
+	lock.lock();
+	try {
+		 _gtk_color_chooser_set_use_alpha (chooser, use_alpha);
+	} finally {
+		lock.unlock();
+	}
+}
 /**
  * @method flags=dynamic
  * @param color_dialog cast=(GtkColorSelectionDialog *)
@@ -6520,6 +6548,30 @@ public static final long /*int*/ gtk_color_selection_dialog_get_color_selection(
 	lock.lock();
 	try {
 		return _gtk_color_selection_dialog_get_color_selection(color_dialog);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRGBA color);
+public static final void  gtk_color_chooser_get_rgba(long /*int*/ chooser, GdkRGBA color) {
+	lock.lock();
+	try {
+		 _gtk_color_chooser_get_rgba(chooser, color);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_color_chooser_get_rgba(long /*int*/ chooser, GdkRGBA color);
+public static final void  gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRGBA color) {
+	lock.lock();
+	try {
+		 _gtk_color_chooser_set_rgba(chooser, color);
 	} finally {
 		lock.unlock();
 	}
@@ -7074,6 +7126,19 @@ public static final long /*int*/ gtk_entry_get_inner_border (long /*int*/ entry)
 	lock.lock();
 	try {
 		return _gtk_entry_get_inner_border(entry);
+	} finally {
+		lock.unlock();
+	}
+}
+/** 
+ * @param self cast=(GtkEntry *)
+ * @param n_chars cast=(gint)
+ */
+public static final native void  _gtk_entry_set_width_chars (long /*int*/ self, int n_chars);
+public static final void  gtk_entry_set_width_chars (long /*int*/ self, int n_chars) {
+	lock.lock();
+	try {
+		_gtk_entry_set_width_chars(self, n_chars);
 	} finally {
 		lock.unlock();
 	}
@@ -7965,6 +8030,7 @@ public static final void gtk_icon_source_set_pixbuf(long /*int*/ source, long /*
 	}
 }
 /**
+ * @method flags=dynamic
  * @param icon_set cast=(GtkIconSet *)
  * @param style cast=(GtkStyle *)
  * @param direction cast=(GtkTextDirection)
@@ -7978,6 +8044,19 @@ public static final long /*int*/ gtk_icon_set_render_icon(long /*int*/ icon_set,
 	lock.lock();
 	try {
 		return _gtk_icon_set_render_icon(icon_set, style, direction, state, size, widget, detail);
+	} finally {
+		lock.unlock();
+	}
+}
+
+/**
+ * @method flags=dynamic
+ */
+public static final native long /*int*/ _gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size);
+public static final long /*int*/ gtk_icon_set_render_icon_pixbuf(long /*int*/ icon_set, long /*int*/ context, int size) {
+	lock.lock();
+	try {
+		return _gtk_icon_set_render_icon_pixbuf(icon_set, context, size);
 	} finally {
 		lock.unlock();
 	}
@@ -8375,6 +8454,45 @@ public static final long /*int*/ gtk_list_store_newv(int numColumns, long /*int*
 	lock.lock();
 	try {
 		return _gtk_list_store_newv(numColumns, types);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param data cast=(const gchar *)
+ * @param length cast=(gssize)
+ * @param error cast=(GError **)
+ */
+public static final native boolean _gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length, long /*int*/ error[]);
+public static final boolean gtk_css_provider_load_from_data(long /*int*/ css_provider, byte[] data, long /*int*/ length, long /*int*/ error[] ) {
+	lock.lock();
+	try {
+		return _gtk_css_provider_load_from_data(css_provider, data, length, error);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native long /*int*/ _gtk_css_provider_new();
+public static final long /*int*/gtk_css_provider_new() {
+	lock.lock();
+	try {
+		return _gtk_css_provider_new();
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ * @param screen cast=(GdkScreen *)
+ * @param priority cast=(guint)
+ */
+public static final native void _gtk_style_context_add_provider_for_screen (long /*int*/ screen, long /*int*/ provider, int priority);
+public static final void gtk_style_context_add_provider_for_screen(long /*int*/ screen, long /*int*/ provider, int priority) {
+	lock.lock();
+	try {
+		_gtk_style_context_add_provider_for_screen(screen, provider, priority);
 	} finally {
 		lock.unlock();
 	}
@@ -10112,7 +10230,10 @@ public static final void gtk_range_get_slider_range(long /*int*/ range, int[] sl
                 lock.unlock();
         }
 }
-/** @param rc_string cast=(const gchar *) */
+/**
+ * @method flags=dynamic
+ * @param rc_string cast=(const gchar *)
+ */
 public static final native void _gtk_rc_parse_string(byte[] rc_string);
 public static final void gtk_rc_parse_string(byte[] rc_string) {
 	lock.lock();

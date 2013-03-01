@@ -53,6 +53,8 @@ public class Composite extends Scrollable {
 	Control [] tabList;
 	int layoutCount, backgroundMode;
 
+	static final int TOOLTIP_LIMIT = 4096;
+
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -304,7 +306,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle () {
 	super.createHandle ();
 	state |= CANVAS;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0 || findThemeControl () == parent) {
 		state |= THEME_BACKGROUND;
 	}
 	if ((style & SWT.TRANSPARENT) != 0) {
@@ -1165,6 +1167,15 @@ String toolTipText (NMTTDISPINFO hdr) {
 		if (toolTip != null) {
 			string = toolTip.message;
 			if (string == null || string.length () == 0) string = " ";
+			/*
+			* Bug in Windows.  On Windows 7, tool tips hang when displaying large
+			* unwrapped strings. The fix is to wrap the string ourselves.
+			*/
+			if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+				if (string.length () > TOOLTIP_LIMIT / 4) {
+					string = display.wrapText (string, handle, toolTip.getWidth ());
+				}
+			}
 		}
 		return string;
 	}
@@ -1855,6 +1866,15 @@ LRESULT wmNotify (NMHDR hdr, long /*int*/ wParam, long /*int*/ lParam) {
 				if (string != null) {
 					Shell shell = getShell ();
 					string = Display.withCrLf (string);
+					/*
+					* Bug in Windows.  On Windows 7, tool tips hang when displaying large
+					* strings. The fix is to limit the tool tip string to 4Kb.
+					*/
+					if (!OS.IsWinCE && OS.WIN32_VERSION >= OS.VERSION (6, 0)) {
+						if (string.length() > TOOLTIP_LIMIT) {
+							string = string.substring(0, TOOLTIP_LIMIT);
+						}
+					}
 					char [] chars = fixMnemonic (string);
 					
 					/*

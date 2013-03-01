@@ -76,6 +76,8 @@
 #define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define g_filename_display_name_LIB LIB_GLIB
+#define g_thread_init_LIB LIB_GLIB
+#define g_thread_supported_LIB LIB_GLIB
 #define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_adjustment_configure_LIB LIB_GTK
 #define gtk_adjustment_get_lower_LIB LIB_GTK
@@ -108,6 +110,10 @@
 #define gtk_cell_renderer_get_preferred_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_size_LIB LIB_GTK
 #define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
+#define gtk_color_chooser_get_rgba_LIB LIB_GTK
+#define gtk_color_chooser_dialog_new_LIB LIB_GTK
+#define gtk_color_chooser_set_rgba_LIB LIB_GTK
+#define gtk_color_chooser_set_use_alpha_LIB LIB_GTK
 #define gtk_combo_box_entry_new_text_LIB LIB_GTK
 #define gtk_combo_box_new_text_LIB LIB_GTK
 #define gtk_combo_box_text_insert_LIB LIB_GTK
@@ -160,6 +166,7 @@
 #define gtk_label_set_line_wrap_mode_LIB LIB_GTK
 #define gtk_icon_info_load_icon_LIB LIB_GTK
 #define gtk_icon_info_free_LIB LIB_GTK
+#define gtk_icon_set_render_icon_LIB LIB_GTK
 #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
@@ -172,6 +179,7 @@
 #define gtk_hscrollbar_new_LIB LIB_GTK
 #define gtk_vscrollbar_new_LIB LIB_GTK
 #define gtk_separator_new_LIB LIB_GTK
+#define gtk_rc_parse_string_LIB LIB_GTK
 #define gtk_hseparator_new_LIB LIB_GTK
 #define gtk_vseparator_new_LIB LIB_GTK
 #define gtk_toolbar_set_orientation_LIB LIB_GTK
@@ -267,6 +275,7 @@
 #define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
 #define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
 #define gtk_scale_new_LIB LIB_GTK
+#define gtk_style_context_add_provider_for_screen_LIB LIB_GTK
 #define gtk_style_context_restore_LIB LIB_GTK
 #define gtk_style_context_save_LIB LIB_GTK
 #define gtk_style_context_set_state_LIB LIB_GTK
@@ -528,6 +537,9 @@
 #define gdk_event_get_scroll_deltas_LIB LIB_GTK
 #define gtk_cell_renderer_set_fixed_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_preferred_height_for_width_LIB LIB_GTK
+#define gtk_css_provider_load_from_data_LIB LIB_GTK
+#define gtk_css_provider_new_LIB LIB_GTK
+#define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)

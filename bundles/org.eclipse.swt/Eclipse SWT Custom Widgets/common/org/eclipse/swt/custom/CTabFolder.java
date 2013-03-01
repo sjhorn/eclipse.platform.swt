@@ -124,6 +124,7 @@ public class CTabFolder extends Composite {
 	boolean mru = false;
 	Listener listener;
 	boolean ignoreTraverse;
+	boolean useDefaultRenderer;
 	
 	/* External Listener management */
 	CTabFolder2Listener[] folderListeners = new CTabFolder2Listener[0];
@@ -257,6 +258,7 @@ void init(int style) {
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
 	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
 	renderer = new CTabFolderRenderer(this);
+	useDefaultRenderer = true;
 	controls = new Control[0];
 	controlAlignments = new int[0];
 	controlRects = new Rectangle[0];
@@ -701,7 +703,7 @@ void destroyItem (CTabItem item) {
 		firstIndex = -1;
 		selectedIndex = -1;
 		
-		Control control = item.getControl();
+		Control control = item.control;
 		if (control != null && !control.isDisposed()) {
 			control.setVisible(false);
 		}
@@ -760,7 +762,7 @@ public boolean getBorderVisible() {
 }
 ToolBar getChevron() {
 	if (chevronTb == null) {
-		chevronTb = new ToolBar(this, SWT.FLAT | SWT.NO_FOCUS);
+		chevronTb = new ToolBar(this, SWT.FLAT);
 		initAccessibleChevronTb();
 		addTabControl(chevronTb, SWT.TRAIL, -1, false);
 	}
@@ -1286,12 +1288,16 @@ void initAccessible() {
 	final Accessible accessible = getAccessible();
 	accessible.addAccessibleListener(new AccessibleAdapter() {
 		public void getName(AccessibleEvent e) {
-			String name = null;
+			CTabItem item = null;
 			int childID = e.childID;
-			if (childID >= 0 && childID < items.length) {
-				name = stripMnemonic(items[childID].getText());
+			if (childID == ACC.CHILDID_SELF) {
+				if (selectedIndex != -1) {
+					item = items[selectedIndex];
+				}
+			} else if (childID >= 0 && childID < items.length) {
+				item = items[childID];
 			}
-			e.result = name;
+			e.result = item == null ? null : stripMnemonic(item.getText());
 		}
 
 		public void getHelp(AccessibleEvent e) {
@@ -1353,7 +1359,7 @@ void initAccessible() {
 				location = getBounds();
 				pt = getParent().toDisplay(location.x, location.y);
 			} else {
-				if (childID >= 0 && childID < items.length && items[childID].isShowing()) {
+				if (childID >= 0 && childID < items.length && items[childID].showing) {
 					location = items[childID].getBounds();
 				}
 				if (location != null) {
@@ -1485,6 +1491,7 @@ void initAccessibleChevronTb() {
 	});
 }
 void onKeyDown (Event event) {
+	runUpdate();
 	switch (event.keyCode) {
 		case SWT.ARROW_LEFT:
 		case SWT.ARROW_RIGHT:
@@ -2058,6 +2065,7 @@ void onSelection(Event event) {
 }
 void onTraverse (Event event) {
 	if (ignoreTraverse) return;
+	runUpdate();
 	switch (event.detail) {
 		case SWT.TRAVERSE_ESCAPE:
 		case SWT.TRAVERSE_RETURN:
@@ -2366,7 +2374,7 @@ void setButtonBounds(GC gc) {
 	Display display = getDisplay();
 	if (showMax) {
 		if (minMaxTb == null) {
-			minMaxTb = new ToolBar(this, SWT.FLAT | SWT.NO_FOCUS);
+			minMaxTb = new ToolBar(this, SWT.FLAT);
 			initAccessibleMinMaxTb();
 			addTabControl(minMaxTb, SWT.TRAIL, 0, false);
 		}
@@ -2389,7 +2397,7 @@ void setButtonBounds(GC gc) {
 	// min button
 	if (showMin) {
 		if (minMaxTb == null) {
-			minMaxTb = new ToolBar(this, SWT.FLAT | SWT.NO_FOCUS);
+			minMaxTb = new ToolBar(this, SWT.FLAT);
 			initAccessibleMinMaxTb();
 			addTabControl(minMaxTb, SWT.TRAIL, 0, false);
 		}
@@ -2480,6 +2488,35 @@ void setButtonBounds(GC gc) {
 	ignoreResize = false;
 	controlRects = rects;
 	if (changed || hovering) updateBkImages();
+}
+public boolean setFocus () {
+	checkWidget ();
+	
+	/*
+	* Feature in SWT.  When a new tab item is selected
+	* and the previous tab item had focus, removing focus
+	* from the previous tab item causes fixFocus() to give
+	* focus to the first child, which is usually one of the
+	* toolbars. This is unexpected.
+	* The fix is to try to set focus on the first tab item
+	* if fixFocus() is called.
+	*/
+	Control focusControl = getDisplay().getFocusControl ();
+	boolean fixFocus = isAncestor (focusControl);
+	if (fixFocus) {
+		CTabItem item = getSelection();
+		if (item != null) {
+			if (item.setFocus ()) return true;
+		}
+	}
+	return super.setFocus ();
+}
+/* Copy of isFocusAncestor from Control. */
+boolean isAncestor (Control control) {
+	while (control != null && control != this && !(control instanceof Shell)) {
+		control = control.getParent();
+	}
+	return control == this;
 }
 public void setFont(Font font) {
 	checkWidget();
@@ -2941,9 +2978,10 @@ public void setMRUVisible(boolean show) {
  */
 public void setRenderer(CTabFolderRenderer renderer) {
 	checkWidget();
-	if (this.renderer == renderer) return;
+	if (this.renderer == renderer || (useDefaultRenderer && renderer == null)) return;
 	if (this.renderer != null) this.renderer.dispose();
-	if (renderer == null) renderer = new CTabFolderRenderer(this);
+	useDefaultRenderer = renderer == null;
+	if (useDefaultRenderer) renderer = new CTabFolderRenderer(this);
 	this.renderer = renderer;
 	updateFolder(REDRAW);
 }
@@ -3484,7 +3522,7 @@ public void showItem (CTabItem item) {
 		newPriority[0] = index;
 		priority = newPriority;
 	}
-	if (item.isShowing()) return;
+	if (item.showing) return;
 	updateFolder(REDRAW_TABS);
 }
 void showList (Rectangle rect) {
@@ -3653,7 +3691,7 @@ void updateFolder (int flags) {
 			runUpdate();
 		}
 	};
-	this.getDisplay().asyncExec(updateRun);
+	getDisplay().asyncExec(updateRun);
 }
 
 void runUpdate() {
@@ -3661,8 +3699,8 @@ void runUpdate() {
 	int flags = updateFlags;
 	updateFlags = 0;
 	Rectangle rectBefore = getClientArea();
-	this.updateTabHeight(false);
-	this.updateItems(selectedIndex);
+	updateTabHeight(false);
+	updateItems(selectedIndex);
 	if ((flags & REDRAW) != 0) {
 		redraw();
 	} else if ((flags & REDRAW_TABS) != 0) {
@@ -3671,7 +3709,7 @@ void runUpdate() {
 	Rectangle rectAfter = getClientArea();
 	if (!rectBefore.equals(rectAfter)) {
 		notifyListeners(SWT.Resize, new Event());
-		this.layout();
+		layout();
 	}
 }
 

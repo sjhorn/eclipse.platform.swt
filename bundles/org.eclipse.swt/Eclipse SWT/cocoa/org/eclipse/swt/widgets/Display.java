@@ -1831,6 +1831,14 @@ double /*float*/ [] getWidgetColorRGB (int id) {
 		case SWT.COLOR_LIST_BACKGROUND: color = NSColor.textBackgroundColor(); break;
 		case SWT.COLOR_LIST_SELECTION_TEXT: color = NSColor.selectedTextColor(); break;
 		case SWT.COLOR_LIST_SELECTION: color = NSColor.selectedTextBackgroundColor(); break;
+		case SWT.COLOR_LINK_FOREGROUND: 
+			NSTextView textView = (NSTextView)new NSTextView().alloc();
+			textView.init ();
+			NSDictionary dict = textView.linkTextAttributes();
+			color = new NSColor(dict.valueForKey(OS.NSForegroundColorAttributeName));
+			textView.release ();
+			break;
+
 	}
 	return getNSColorRGB (color);
 }
@@ -2232,7 +2240,9 @@ protected void init () {
 	markedAttributes.retain ();
 	textView.release ();
 	
-	id blink = NSUserDefaults.standardUserDefaults().objectForKey(NSString.stringWith("NSTextInsertionPointBlinkPeriod"));
+	NSUserDefaults defaults = NSUserDefaults.standardUserDefaults();
+	defaults.setInteger(0, NSString.stringWith(OS.VERSION >= 0x1080 ? "NSScrollAnimationEnabled" : "AppleScrollAnimationEnabled"));
+	id blink = defaults.objectForKey(NSString.stringWith("NSTextInsertionPointBlinkPeriod"));
 	if (blink != null) blinkTime = (int)new NSNumber(blink).integerValue();
 	if (blinkTime == 0) blinkTime = 560;
 	
@@ -2940,7 +2950,7 @@ NSFont getFont (long /*int*/ cls, long /*int*/ sel) {
 }
 
 void initColors () {
-	colors = new double /*float*/ [SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT + 1][];
+	colors = new double /*float*/ [SWT.COLOR_LINK_FOREGROUND + 1][];
 	colors[SWT.COLOR_INFO_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_FOREGROUND);
 	colors[SWT.COLOR_INFO_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_INFO_BACKGROUND);
 	colors[SWT.COLOR_TITLE_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_TITLE_FOREGROUND);
@@ -2960,6 +2970,7 @@ void initColors () {
 	colors[SWT.COLOR_LIST_BACKGROUND] = getWidgetColorRGB(SWT.COLOR_LIST_BACKGROUND);
 	colors[SWT.COLOR_LIST_SELECTION_TEXT] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION_TEXT);
 	colors[SWT.COLOR_LIST_SELECTION] = getWidgetColorRGB(SWT.COLOR_LIST_SELECTION);
+	colors[SWT.COLOR_LINK_FOREGROUND] = getWidgetColorRGB(SWT.COLOR_LINK_FOREGROUND);
 
 	alternateSelectedControlColor = getNSColorRGB(NSColor.alternateSelectedControlColor());
 	alternateSelectedControlTextColor = getNSColorRGB(NSColor.alternateSelectedControlTextColor());
@@ -4465,6 +4476,17 @@ void setMenuBar (Menu menu) {
 		for (int i = 0; i < items.length; i++) {
 			MenuItem item = items[i];
 			NSMenuItem nsItem = item.nsItem;
+			
+			/*
+			* Bug in cocoa.  Cocoa does not seem to detect the help
+			* menu for languages other than english.  The fix is to detect
+			* it ourselves.
+			*/
+			NSMenu submenu = nsItem.submenu();
+			if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) { 
+				application.setHelpMenu(submenu);
+			}
+			
 			nsItem.setMenu(null);
 			menubar.addItem(nsItem);
 			

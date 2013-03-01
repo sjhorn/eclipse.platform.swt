@@ -644,6 +644,21 @@ public void create (Composite parent, int style) {
 	* be changed.
 	*/
 	browser.setData (KEY_CHECK_SUBWINDOW, Boolean.FALSE);
+
+	/*
+	 * Bug in WebKitGTK.  In WebKitGTK releases >= 1.10 a crash can occur if an
+	 * attempt is made to show a browser before a size has been set on it.  The
+	 * workaround is to temporarily give it a size in order to force the native
+	 * resize events to fire. 
+	 */
+	int minor = WebKitGTK.webkit_minor_version ();
+	if (minor >= 10) {
+		Point size = browser.getSize();
+		size.x += 2; size.y += 2;
+		browser.setSize(size);
+		size.x -= 2; size.y -= 2;
+		browser.setSize(size);
+	}
 }
 
 void addEventHandlers (long /*int*/ web_view, boolean top) {

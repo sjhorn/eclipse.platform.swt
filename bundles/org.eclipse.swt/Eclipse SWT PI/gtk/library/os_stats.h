@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -685,6 +685,10 @@ typedef enum {
 	_1gtk_1clipboard_1set_1with_1owner_FUNC,
 	_1gtk_1clipboard_1store_FUNC,
 	_1gtk_1clipboard_1wait_1for_1contents_FUNC,
+	_1gtk_1color_1chooser_1dialog_1new_FUNC,
+	_1gtk_1color_1chooser_1get_1rgba_FUNC,
+	_1gtk_1color_1chooser_1set_1rgba_FUNC,
+	_1gtk_1color_1chooser_1set_1use_1alpha_FUNC,
 	_1gtk_1color_1selection_1dialog_1get_1color_1selection_FUNC,
 	_1gtk_1color_1selection_1dialog_1new_FUNC,
 	_1gtk_1color_1selection_1get_1current_1color_FUNC,
@@ -711,6 +715,8 @@ typedef enum {
 	_1gtk_1container_1remove_FUNC,
 	_1gtk_1container_1resize_1children_FUNC,
 	_1gtk_1container_1set_1border_1width_FUNC,
+	_1gtk_1css_1provider_1load_1from_1data_FUNC,
+	_1gtk_1css_1provider_1new_FUNC,
 	_1gtk_1dialog_1add_1button_FUNC,
 	_1gtk_1dialog_1run_FUNC,
 	_1gtk_1drag_1begin_FUNC,
@@ -751,6 +757,7 @@ typedef enum {
 	_1gtk_1entry_1set_1placeholder_1text_FUNC,
 	_1gtk_1entry_1set_1text_FUNC,
 	_1gtk_1entry_1set_1visibility_FUNC,
+	_1gtk_1entry_1set_1width_1chars_FUNC,
 	_1gtk_1entry_1text_1index_1to_1layout_1index_FUNC,
 	_1gtk_1enumerate_1printers_FUNC,
 	_1gtk_1expander_1get_1expanded_FUNC,
@@ -805,6 +812,7 @@ typedef enum {
 	_1gtk_1icon_1info_1free_FUNC,
 	_1gtk_1icon_1info_1load_1icon_FUNC,
 	_1gtk_1icon_1set_1render_1icon_FUNC,
+	_1gtk_1icon_1set_1render_1icon_1pixbuf_FUNC,
 	_1gtk_1icon_1source_1free_FUNC,
 	_1gtk_1icon_1source_1new_FUNC,
 	_1gtk_1icon_1source_1set_1pixbuf_FUNC,
@@ -1068,6 +1076,7 @@ typedef enum {
 	_1gtk_1status_1icon_1set_1tooltip_FUNC,
 	_1gtk_1status_1icon_1set_1visible_FUNC,
 	_1gtk_1style_1context_1add_1class_FUNC,
+	_1gtk_1style_1context_1add_1provider_1for_1screen_FUNC,
 	_1gtk_1style_1context_1get_1background_1color_FUNC,
 	_1gtk_1style_1context_1get_1border_FUNC,
 	_1gtk_1style_1context_1get_1border_1color_FUNC,
@@ -1562,8 +1571,6 @@ typedef enum {
 	g_1value_1set_1int_FUNC,
 	g_1value_1set_1int64_FUNC,
 	g_1value_1unset_FUNC,
-	gdk_1threads_1enter_FUNC,
-	gdk_1threads_1init_FUNC,
 	gdk_1threads_1leave_FUNC,
 	gdk_1threads_1set_1lock_1functions_FUNC,
 	imContextLast_FUNC,

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -675,6 +675,10 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1clipboard_1set_1with_1owner",
 	"_1gtk_1clipboard_1store",
 	"_1gtk_1clipboard_1wait_1for_1contents",
+	"_1gtk_1color_1chooser_1dialog_1new",
+	"_1gtk_1color_1chooser_1get_1rgba",
+	"_1gtk_1color_1chooser_1set_1rgba",
+	"_1gtk_1color_1chooser_1set_1use_1alpha",
 	"_1gtk_1color_1selection_1dialog_1get_1color_1selection",
 	"_1gtk_1color_1selection_1dialog_1new",
 	"_1gtk_1color_1selection_1get_1current_1color",
@@ -701,6 +705,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1container_1remove",
 	"_1gtk_1container_1resize_1children",
 	"_1gtk_1container_1set_1border_1width",
+	"_1gtk_1css_1provider_1load_1from_1data",
+	"_1gtk_1css_1provider_1new",
 	"_1gtk_1dialog_1add_1button",
 	"_1gtk_1dialog_1run",
 	"_1gtk_1drag_1begin",
@@ -741,6 +747,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1entry_1set_1placeholder_1text",
 	"_1gtk_1entry_1set_1text",
 	"_1gtk_1entry_1set_1visibility",
+	"_1gtk_1entry_1set_1width_1chars",
 	"_1gtk_1entry_1text_1index_1to_1layout_1index",
 	"_1gtk_1enumerate_1printers",
 	"_1gtk_1expander_1get_1expanded",
@@ -795,6 +802,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1icon_1info_1free",
 	"_1gtk_1icon_1info_1load_1icon",
 	"_1gtk_1icon_1set_1render_1icon",
+	"_1gtk_1icon_1set_1render_1icon_1pixbuf",
 	"_1gtk_1icon_1source_1free",
 	"_1gtk_1icon_1source_1new",
 	"_1gtk_1icon_1source_1set_1pixbuf",
@@ -1058,6 +1066,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1status_1icon_1set_1tooltip",
 	"_1gtk_1status_1icon_1set_1visible",
 	"_1gtk_1style_1context_1add_1class",
+	"_1gtk_1style_1context_1add_1provider_1for_1screen",
 	"_1gtk_1style_1context_1get_1background_1color",
 	"_1gtk_1style_1context_1get_1border",
 	"_1gtk_1style_1context_1get_1border_1color",
@@ -1552,8 +1561,6 @@ char * OS_nativeFunctionNames[] = {
 	"g_1value_1set_1int",
 	"g_1value_1set_1int64",
 	"g_1value_1unset",
-	"gdk_1threads_1enter",
-	"gdk_1threads_1init",
 	"gdk_1threads_1leave",
 	"gdk_1threads_1set_1lock_1functions",
 	"imContextLast",

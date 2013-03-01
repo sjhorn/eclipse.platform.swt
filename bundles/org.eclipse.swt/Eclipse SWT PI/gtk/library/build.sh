@@ -195,7 +195,7 @@ case $SWT_OS.$SWT_ARCH in
 			export CC=gcc
 		fi
 		if [ "${JAVA_HOME}" = "" ]; then
-			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/PPC64/ibm-java2-ppc64-50"
+			export JAVA_HOME="/bluebird/teamswt/swt-builddir/JDKs/PPC64/jre5u10"
 		fi
 		if [ "${MOZILLA_SDK}" = "" ]; then
 			export MOZILLA_SDK=" /bluebird/teamswt/swt-builddir/mozilla/1.7/ppc64/mozilla/dist/sdk"
@@ -252,7 +252,7 @@ case $SWT_OS.$SWT_ARCH in
 #		export PATH="/export/home/SUNWspro/bin:/usr/ccs/bin:/usr/bin"
 		if [ "${CC}" = "" ]; then
 			export CC="cc"
-		fi
+		fi	
 		if [ "${CXX}" = "" ]; then
 			export CXX="CC"
 		fi
@@ -447,6 +447,11 @@ fi
 if [ ${MODEL} = 's390' ]; then
 	SWT_PTR_CFLAGS="-m31"	
 	SWT_LFLAGS=-m31
+	export SWT_LFLAGS SWT_PTR_CFLAGS
+fi
+if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
+	SWT_PTR_CFLAGS="-m32"	
+	SWT_LFLAGS=-m32
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 
