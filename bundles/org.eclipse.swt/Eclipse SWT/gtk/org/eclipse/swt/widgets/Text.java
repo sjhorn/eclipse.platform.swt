@@ -559,15 +559,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.g_object_unref (layout);
 		width = Math.max (width, w [0]);
 	}
-	if (OS.GTK3) {
-		GtkRequisition requsition = new GtkRequisition();
-		OS.gtk_widget_get_preferred_size(handle, requsition, null);
-		if (width == 0) width = requsition.width;
-		if (height == 0) height = requsition.height;
-	} else {
-		if (width == 0) width = DEFAULT_WIDTH;
-		if (height == 0) height = DEFAULT_HEIGHT;
-	}
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
 	Rectangle trim = computeTrim (0, 0, width, height);
@@ -847,9 +840,7 @@ public Point getCaretLocation () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
 		int index = OS.gtk_editable_get_position (handle);
-		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-			index = OS.gtk_entry_text_index_to_layout_index (handle, index);
-		}
+		index = OS.gtk_entry_text_index_to_layout_index (handle, index);
 		int [] offset_x = new int [1], offset_y = new int [1];
 		OS.gtk_entry_get_layout_offsets (handle, offset_x, offset_y);
 		long /*int*/ layout = OS.gtk_entry_get_layout (handle);
@@ -1962,18 +1953,6 @@ void register () {
 void releaseWidget () {
 	super.releaseWidget ();
 	fixIM ();	
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {		 
-		/*
-		* Bug in GTK.  Any text copied into the clipboard will be lost when
-		* the GtkTextView is destroyed.  The fix is to paste the contents as
-		* the widget is being destroyed to reference the text buffer, keeping
-		* it around until ownership of the clipboard is lost.
-		*/
-		if ((style & SWT.MULTI) != 0) {
-			long /*int*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
-			OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
-		}
-	}
 	message = null;
 }
 
@@ -2107,6 +2086,14 @@ void setBackgroundColor (GdkColor color) {
 	if (!OS.GTK3) {
 		OS.gtk_widget_modify_base (handle, 0, color);
 	}
+}
+
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	if ((style & SWT.MULTI) != 0) {
+		super.setBackgroundColor (context, handle, rgba);
+		return;
+	}
+	setBackgroundColorGradient (context, handle, rgba);
 }
 
 void setCursor (long /*int*/ cursor) {

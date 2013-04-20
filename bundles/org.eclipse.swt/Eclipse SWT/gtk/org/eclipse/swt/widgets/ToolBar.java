@@ -138,6 +138,18 @@ void createHandle (int index) {
 		byte [] swt_toolbar_flat = Converter.wcsToMbcs (null, "swt-toolbar-flat", true);
 		OS.gtk_widget_set_name (handle, swt_toolbar_flat);
 	}
+
+	/*
+	* Bug in GTK. For some reason, the toolbar style context does not read
+	* the CSS style sheet until the window containing the toolbar is shown.
+	* The fix is to call gtk_style_context_invalidate() which it seems to
+	* force the style sheet to be read. 
+	*/
+	if (OS.GTK3) { 
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		OS.gtk_style_context_invalidate (context);
+	}
+	
 	/*
 	* Bug in GTK.  GTK will segment fault if gtk_widget_reparent() is called
 	* on a tool bar or on a widget hierarchy containing a tool bar when the icon
@@ -390,30 +402,7 @@ ToolItem [] _getTabItemList () {
 long /*int*/ gtk_key_press_event (long /*int*/ widget, long /*int*/ eventPtr) {
 	if (!hasFocus ()) return 0;
 	long /*int*/ result = super.gtk_key_press_event (widget, eventPtr);
-	if (result != 0) return result;
-	GdkEventKey gdkEvent = new GdkEventKey ();
-	OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
-	switch (gdkEvent.keyval) {
-		case OS.GDK_Down: {
-			if (OS.GTK_VERSION < OS.VERSION (2, 6, 0) && (currentFocusItem != null) && (currentFocusItem.style & SWT.DROP_DOWN) != 0) {
-				Event event = new Event ();
-				event.detail = SWT.ARROW;
-				long /*int*/ topHandle = currentFocusItem.topHandle ();
-				GtkAllocation allocation = new GtkAllocation ();
-				gtk_widget_get_allocation (topHandle, allocation);
-				event.x = allocation.x;
-				event.y = allocation.y + allocation.height;
-				if ((style & SWT.MIRRORED) != 0) event.x = getClientWidth() - allocation.width - event.x;
-				currentFocusItem.sendSelectionEvent  (SWT.Selection, event, false);
-				/*
-				 * Stop GTK from processing the event further as key_down binding
-				 * will move the focus to the next item.
-				 */
-				return 1;
-			}
-		}
-		default: return result;
-	}
+	return result;
 }
 
 long /*int*/ gtk_focus (long /*int*/ widget, long /*int*/ directionType) {

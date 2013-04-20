@@ -31,6 +31,7 @@
 #define LIB_GDK "libgdk-x11-2.0.a(libgdk-x11-2.0.so.0)"
 #define LIB_GLIB "libglib-2.0.a(libglib-2.0.so.0)"
 #define LIB_GOBJECT "libgobject-2.0.a(libgobject-2.0.so.0)"
+#define LIB_GTHREAD "libgthread-2.0.a(libgthread-2.0.so.0)"
 #define LIB_ATK "libatk-1.0.a(libatk-1.0.so.0)"
 #define LIB_PANGO "libpango-1.0.a(libpango-1.0.so.0)"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.a(libpangocairo-1.0.so.0)"
@@ -42,6 +43,7 @@
 #define LIB_GDK "libgdk-x11-2.0.so"
 #define LIB_GLIB "libglib-2.0.so"
 #define LIB_GOBJECT "libgobject-2.0.so"
+#define LIB_GTHREAD "libgthread-2.0.so"
 #define LIB_ATK "libatk-1.0.so"
 #define LIB_PANGO "libpango-1.0.so"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.so"
@@ -58,6 +60,7 @@
 #endif
 #define LIB_GLIB "libglib-2.0.so.0"
 #define LIB_GOBJECT "libgobject-2.0.so.0"
+#define LIB_GTHREAD "libgthread-2.0.so.0"
 #define LIB_ATK "libatk-1.0.so.0"
 #define LIB_PANGO "libpango-1.0.so.0"
 #define LIB_PANGOCAIRO "libpangocairo-1.0.so.0"
@@ -76,8 +79,7 @@
 #define XRenderSetPictureClipRectangles_LIB LIB_XRENDER
 #define XRenderSetPictureTransform_LIB LIB_XRENDER
 #define g_filename_display_name_LIB LIB_GLIB
-#define g_thread_init_LIB LIB_GLIB
-#define g_thread_supported_LIB LIB_GLIB
+#define g_thread_init_LIB LIB_GTHREAD
 #define gtk_widget_set_allocation_LIB LIB_GTK
 #define gtk_adjustment_configure_LIB LIB_GTK
 #define gtk_adjustment_get_lower_LIB LIB_GTK
@@ -110,6 +112,11 @@
 #define gtk_cell_renderer_get_preferred_size_LIB LIB_GTK
 #define gtk_cell_renderer_get_size_LIB LIB_GTK
 #define gtk_color_selection_dialog_get_color_selection_LIB LIB_GTK
+#define gtk_color_selection_dialog_new_LIB LIB_GTK
+#define gtk_color_selection_set_has_palette_LIB LIB_GTK
+#define gtk_color_selection_get_current_color_LIB LIB_GTK
+#define gtk_color_selection_set_current_color_LIB LIB_GTK
+#define gtk_color_selection_palette_to_string_LIB LIB_GTK
 #define gtk_color_chooser_get_rgba_LIB LIB_GTK
 #define gtk_color_chooser_dialog_new_LIB LIB_GTK
 #define gtk_color_chooser_set_rgba_LIB LIB_GTK
@@ -276,6 +283,7 @@
 #define gtk_scrolled_window_get_vscrollbar_LIB LIB_GTK
 #define gtk_scale_new_LIB LIB_GTK
 #define gtk_style_context_add_provider_for_screen_LIB LIB_GTK
+#define gtk_style_context_add_provider_LIB LIB_GTK
 #define gtk_style_context_restore_LIB LIB_GTK
 #define gtk_style_context_save_LIB LIB_GTK
 #define gtk_style_context_set_state_LIB LIB_GTK
@@ -521,6 +529,8 @@
 #define gtk_widget_override_color_LIB LIB_GTK
 #define gtk_widget_override_background_color_LIB LIB_GTK
 #define gtk_widget_override_font_LIB LIB_GTK
+#define gtk_widget_get_preferred_height_for_width_LIB LIB_GTK
+#define gtk_widget_get_preferred_width_for_height_LIB LIB_GTK
 #define gtk_style_context_get_font_LIB LIB_GTK
 #define gtk_style_context_get_color_LIB LIB_GTK
 #define gtk_style_context_get_background_color_LIB LIB_GTK
@@ -528,6 +538,7 @@
 #define gtk_style_context_get_border_color_LIB LIB_GTK
 #define gtk_style_context_get_padding_LIB LIB_GTK
 #define gtk_style_context_get_border_LIB LIB_GTK
+#define gtk_style_context_invalidate_LIB LIB_GTK
 #define gtk_hsv_to_rgb_LIB LIB_GTK
 #define gtk_rgb_to_hsv_LIB LIB_GTK
 #define gdk_window_set_background_pattern_LIB LIB_GTK
@@ -540,6 +551,10 @@
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
+
+#ifndef g_thread_supported
+#define g_thread_supported() 0
+#endif
 
 /* Field accessors */
 #if GTK_CHECK_VERSION(3,0,0)
@@ -724,6 +739,7 @@ GType swt_fixed_get_type (void) G_GNUC_CONST;
 
 void swt_fixed_restack(SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, gboolean above);
 void swt_fixed_move(SwtFixed *fixed, GtkWidget *widget, gint x, gint y);
+void swt_fixed_resize(SwtFixed *fixed, GtkWidget *widget, gint width, gint height);
 
 #endif
 

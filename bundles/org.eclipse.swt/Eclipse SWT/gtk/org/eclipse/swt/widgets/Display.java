@@ -1749,10 +1749,8 @@ public Menu getMenuBar () {
 public int getDismissalAlignment () {
 	checkDevice ();
 	int [] buffer = new int [1];
-	if (OS.GTK_VERSION >= OS.VERSION (2, 6, 0)) {
-		long /*int*/ settings = OS.gtk_settings_get_default ();
-		OS.g_object_get (settings, OS.gtk_alternative_button_order, buffer, 0);
-	}
+	long /*int*/ settings = OS.gtk_settings_get_default ();
+	OS.g_object_get (settings, OS.gtk_alternative_button_order, buffer, 0);
 	return buffer [0] == 1 ? SWT.LEFT : SWT.RIGHT;
 }
 
@@ -2281,6 +2279,29 @@ GdkColor toGdkColor (GdkRGBA rgba, double m) {
 	return gdkColor;
 }
 
+void getBackgroundColor (long /*int*/ context, int state, GdkRGBA rgba) {
+	/*
+	* Draw the context background to an offset screen surface and get the color
+	* in the middle of the surface. 
+	*/
+	OS.gtk_style_context_save (context);
+	OS.gtk_style_context_set_state (context, state);
+	long /*int*/ surface = Cairo.cairo_image_surface_create (Cairo.CAIRO_FORMAT_RGB24, 1, 1);
+	long /*int*/ cairo = Cairo.cairo_create (surface);
+	OS.gtk_render_background (context, cairo, -50, -50, 100, 100);
+	Cairo.cairo_fill (cairo);
+	Cairo.cairo_surface_flush (surface);
+	byte[] buffer = new byte[3];
+	OS.memmove (buffer, Cairo.cairo_image_surface_get_data(surface), buffer.length);
+	rgba.red = buffer[2] / 255f;
+	rgba.green = buffer[1] / 255f;
+	rgba.blue = buffer[0] / 255f;
+	rgba.alpha = 1;
+	Cairo.cairo_surface_destroy (surface);
+	Cairo.cairo_destroy (cairo);
+	OS.gtk_style_context_restore (context);
+}
+
 void initializeSystemColors () {
 	long /*int*/ tooltipShellHandle = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
 	if (tooltipShellHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -2308,10 +2329,11 @@ void initializeSystemColors () {
 	if (OS.GTK3) {
 		long /*int*/ context = OS.gtk_widget_get_style_context (tooltipShellHandle);
 		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_TOOLTIP);
+		OS.gtk_style_context_invalidate(context);
 		GdkRGBA rgba = new GdkRGBA();
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_INFO_FOREGROUND = toGdkColor (rgba);
-		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		getBackgroundColor (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_INFO_BACKGROUND = toGdkColor (rgba);
 		OS.gtk_widget_destroy (tooltipShellHandle);	
 
@@ -2331,6 +2353,7 @@ void initializeSystemColors () {
 		OS.gtk_style_context_save (context);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_VIEW);
 		OS.gtk_style_context_add_class(context, OS.GTK_STYLE_CLASS_CELL);
+		OS.gtk_style_context_invalidate(context);
 		OS.gtk_style_context_get_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
 		COLOR_LIST_FOREGROUND = toGdkColor (rgba);
 		OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
@@ -3546,7 +3569,7 @@ void releaseDisplay () {
 	OS.g_type_class_unref (pangoLayoutClass);
 	pangoLayoutNewProc = 0;
 	if (OS.GTK3) {
-		long /*int*/ imContextType = OS.PANGO_TYPE_LAYOUT ();
+		long /*int*/ imContextType = OS.GTK_TYPE_IM_MULTICONTEXT ();
 		long /*int*/ imContextClass = OS.g_type_class_ref (imContextType);
 		OS.G_OBJECT_CLASS_SET_CONSTRUCTOR (imContextClass, imContextNewProc);
 		OS.g_type_class_unref (imContextClass);

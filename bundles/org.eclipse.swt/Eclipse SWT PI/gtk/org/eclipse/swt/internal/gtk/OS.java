@@ -241,6 +241,8 @@ public class OS extends C {
 	public static final int GDK_SCROLL_LEFT = 2;
 	public static final int GDK_SCROLL_RIGHT = 3;
 	public static final int GDK_SCROLL_SMOOTH = 4;
+	public static final int GDK_SCROLL_MASK = 1 << 21;
+	public static final int GDK_SMOOTH_SCROLL_MASK = 1 << 23;
 	public static final int GDK_SELECTION_CLEAR = 17;
 	public static final int GDK_SELECTION_NOTIFY = 19;
 	public static final int GDK_SELECTION_REQUEST = 18;
@@ -566,6 +568,8 @@ public class OS extends C {
 	public static final byte[] GTK_STYLE_CLASS_TOOLTIP = ascii("tooltip");
 	public static final byte[] GTK_STYLE_CLASS_VIEW = ascii("view");
 	public static final byte[] GTK_STYLE_CLASS_CELL = ascii("cell");
+	public static final byte[] GTK_STYLE_CLASS_PANE_SEPARATOR = ascii("pane-separator");
+	public static final byte[] GTK_STYLE_CLASS_FRAME = ascii("frame");
 	
 	/** Properties */
 	public static final byte[] active = ascii("active");
@@ -3304,6 +3308,7 @@ public static final long /*int*/ g_type_register_static (long /*int*/ parent_typ
 	}
 }
 /** 
+ * @method flags=dynamic
  * @param vtable cast=(GThreadFunctions *) 
  */
 public static final native void _g_thread_init(long /*int*/ vtable);
@@ -6347,6 +6352,30 @@ public static final void gtk_widget_get_preferred_size(long /*int*/ widget, GtkR
 		lock.unlock();
 	}
 }
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size);
+public static final void gtk_widget_get_preferred_height_for_width(long /*int*/ widget, int width, int[] minimum_size, int[] natural_size) {
+	lock.lock();
+	try {
+		_gtk_widget_get_preferred_height_for_width(widget, width, minimum_size, natural_size);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @method flags=dynamic
+ */
+public static final native void _gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size);
+public static final void gtk_widget_get_preferred_width_for_height(long /*int*/ widget, int height, int[] minimum_size, int[] natural_size) {
+	lock.lock();
+	try {
+		_gtk_widget_get_preferred_width_for_height(widget, height, minimum_size, natural_size);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native long /*int*/ _gtk_cell_renderer_pixbuf_new();
 public static final long /*int*/ gtk_cell_renderer_pixbuf_new() {
 	lock.lock();
@@ -6503,7 +6532,10 @@ public static final long /*int*/ gtk_clipboard_wait_for_contents(long /*int*/ cl
 		lock.unlock();
 	}
 }
-/** @param title cast=(const gchar *) */
+/** 
+ * @method flags=dynamic
+ * @param title cast=(const gchar *) 
+ */
 public static final native long /*int*/ _gtk_color_selection_dialog_new(byte[] title);
 public static final long /*int*/ gtk_color_selection_dialog_new(byte[] title) {
 	lock.lock();
@@ -6576,9 +6608,9 @@ public static final void  gtk_color_chooser_set_rgba(long /*int*/ chooser, GdkRG
 		lock.unlock();
 	}
 }
-/**
- * @param colorsel cast=(GtkColorSelection *)
- * @param color cast=(GdkColor *),flags=no_in
+/** 
+ * @method flags=dynamic 
+ * @param color flags=no_in
  */
 public static final native void _gtk_color_selection_get_current_color(long /*int*/ colorsel, GdkColor color);
 public static final void gtk_color_selection_get_current_color(long /*int*/ colorsel, GdkColor color) {
@@ -6589,10 +6621,7 @@ public static final void gtk_color_selection_get_current_color(long /*int*/ colo
 		lock.unlock();
 	}
 }
-/**
- * @param colors cast=(GdkColor *)
- * @param n_colors cast=(gint)
- */
+/** @method flags=dynamic */
 public static final native long /*int*/ _gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors);
 public static final long /*int*/ gtk_color_selection_palette_to_string(long /*int*/ colors, int n_colors) {
 	lock.lock();
@@ -6602,9 +6631,9 @@ public static final long /*int*/ gtk_color_selection_palette_to_string(long /*in
 		lock.unlock();
 	}
 }
-/**
- * @param colorsel cast=(GtkColorSelection *)
- * @param color cast=(GdkColor *),flags=no_out
+/** 
+ * @method flags=dynamic 
+ * @param color flags=no_out
  */
 public static final native void _gtk_color_selection_set_current_color(long /*int*/ colorsel, GdkColor color);
 public static final void gtk_color_selection_set_current_color(long /*int*/ colorsel, GdkColor color) {
@@ -6615,7 +6644,7 @@ public static final void gtk_color_selection_set_current_color(long /*int*/ colo
 		lock.unlock();
 	}
 }
-/** @param colorsel cast=(GtkColorSelection *) */
+/** @method flags=dynamic */
 public static final native void _gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette);
 public static final void gtk_color_selection_set_has_palette(long /*int*/ colorsel, boolean has_palette) {
 	lock.lock();
@@ -8493,6 +8522,22 @@ public static final void gtk_style_context_add_provider_for_screen(long /*int*/ 
 	lock.lock();
 	try {
 		_gtk_style_context_add_provider_for_screen(screen, provider, priority);
+	} finally {
+		lock.unlock();
+	}
+}
+
+
+/**
+* @method flags=dynamic
+* @param priority cast=(guint)
+*/
+public static final native void _gtk_style_context_add_provider (long /*int*/ context, long /*int*/ provider, int priority);
+public static final void gtk_style_context_add_provider(
+	long /*int*/context, long /*int*/provider, int priority) {
+	lock.lock();
+	try {
+		_gtk_style_context_add_provider(context, provider, priority);
 	} finally {
 		lock.unlock();
 	}
@@ -10902,6 +10947,16 @@ public static final void gtk_style_context_get_border(long /*int*/ context, int 
 	lock.lock();
 	try {
 		_gtk_style_context_get_border(context, state, padding);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_style_context_invalidate(long /*int*/ context);
+public static final void gtk_style_context_invalidate(long /*int*/ context) {
+	lock.lock();
+	try {
+		_gtk_style_context_invalidate(context);
 	} finally {
 		lock.unlock();
 	}
@@ -16125,6 +16180,19 @@ public static final void swt_fixed_move(long /*int*/ fixed, long /*int*/ widget,
 	lock.lock();
 	try {
 		_swt_fixed_move(fixed, widget, x, y);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
+ * @param fixed cast=(SwtFixed*)
+ * @param widget cast=(GtkWidget*)
+ */
+public static final native void _swt_fixed_resize(long /*int*/ fixed, long /*int*/ widget, int width, int height);
+public static final void swt_fixed_resize(long /*int*/ fixed, long /*int*/ widget, int width, int height) {
+	lock.lock();
+	try {
+		_swt_fixed_resize(fixed, widget, width, height);
 	} finally {
 		lock.unlock();
 	}

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,13 +11,13 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gdip.*;
 import org.eclipse.swt.internal.win32.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.accessibility.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -25,7 +25,7 @@ import org.eclipse.swt.accessibility.*;
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
- * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT, FLIP_TEXT_DIRECTION</dd>
  * <dt><b>Events:</b>
  * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
  *     MouseExit, MouseHover, MouseUp, MouseMove, MouseWheel, MouseHorizontalWheel, MouseVerticalWheel, Move,
@@ -1578,6 +1578,26 @@ public Point getSize () {
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	return new Point (width, height);
+}
+
+/**
+ * Returns the text direction of the receiver, which will be one of the
+ * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * @return the text direction style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.102
+ */
+public int getTextDirection() {
+	checkWidget ();
+	int flags = OS.WS_EX_LAYOUTRTL | OS.WS_EX_RTLREADING;
+	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE) & flags;
+	return bits == 0 || bits == flags ? SWT.LEFT_TO_RIGHT : SWT.RIGHT_TO_LEFT;
 }
 
 /**
@@ -3488,6 +3508,7 @@ public void setOrientation (int orientation) {
 	style &= ~SWT.MIRRORED;
 	style &= ~flags;
 	style |= orientation & flags;
+	style &= ~SWT.FLIP_TEXT_DIRECTION;
 	updateOrientation ();
 	checkMirrored ();
 }
@@ -3648,6 +3669,42 @@ public void setSize (Point size) {
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
 	return forceFocus ();
+}
+
+/**
+ * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
+ * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code> or
+ * <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ * <code>setOrientation</code> would override this value with the text direction
+ * that is consistent with the new orientation.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the base text direction style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#FLIP_TEXT_DIRECTION
+ * 
+ * @since 3.102
+ */
+public void setTextDirection(int textDirection) {
+	checkWidget ();
+	if (OS.IsWinCE) return;
+	if (OS.WIN32_VERSION < OS.VERSION (4, 10)) return;
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	textDirection &= flags;
+	if (textDirection == 0 || textDirection == flags) return;
+	if (updateTextDirection(textDirection)) {
+		OS.InvalidateRect (handle, null, true);
+	}
 }
 
 /**
@@ -4420,8 +4477,33 @@ void updateOrientation () {
 	} else {
 		bits &= ~OS.WS_EX_LAYOUTRTL;
 	}
+	bits &= ~OS.WS_EX_RTLREADING;
 	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 	OS.InvalidateRect (handle, null, true);
+}
+
+boolean updateTextDirection (int textDirection) {
+	int bits  = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	/*
+	* OS.WS_EX_RTLREADING means that the text direction is opposite to the
+	* natural one for the current layout. So text direction would be RTL when
+	* one and only one of the flags OS.WS_EX_LAYOUTRTL | OS.WS_EX_RTLREADING is
+	* on. 
+	*/
+	int flags = OS.WS_EX_LAYOUTRTL | OS.WS_EX_RTLREADING;
+	boolean oldRtl = ((bits & flags) != 0 && (bits & flags) != flags);
+	boolean newRtl = textDirection == SWT.RIGHT_TO_LEFT;
+	if (newRtl == oldRtl) return false;
+	oldRtl = (bits & OS.WS_EX_LAYOUTRTL) != 0;
+	if (newRtl != oldRtl) {
+		bits |= OS.WS_EX_RTLREADING;
+		style |= SWT.FLIP_TEXT_DIRECTION;
+	} else {
+		bits &= ~OS.WS_EX_RTLREADING;
+		style &= ~SWT.FLIP_TEXT_DIRECTION;
+	}
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
+	return true;
 }
 
 CREATESTRUCT widgetCreateStruct () {
@@ -4446,6 +4528,7 @@ int widgetExtStyle () {
 	} 
 	bits |= OS.WS_EX_NOINHERITLAYOUT;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) bits |= OS.WS_EX_LAYOUTRTL;
+	if ((style & SWT.FLIP_TEXT_DIRECTION) != 0) bits |= OS.WS_EX_RTLREADING;
 	return bits;
 }
 

@@ -1545,8 +1545,14 @@ public int getItemHeight () {
 		int [] w = new int [1], h = new int [1];
 		ignoreSize = true;
 		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
+		int height = h [0];
+		if (OS.GTK3) {
+			long /*int*/ textRenderer = getTextRenderer (column);
+			OS.gtk_cell_renderer_get_preferred_height_for_width (textRenderer, handle, 0, h, null);
+			height += h [0];
+		}
 		ignoreSize = false;
-		return h [0];
+		return height;
 	} else {
 		int height = 0;
 		long /*int*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
@@ -2839,13 +2845,6 @@ void reskinChildren (int flags) {
 boolean searchEnabled () {
 	/* Disable searching when using VIRTUAL */
 	if ((style & SWT.VIRTUAL) != 0) return false;
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {
-		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-		Shell shell = getShell();
-		if ((shell.style & mask) != 0) {
-			return false;
-		}
-	}
 	return true;
 }
 /**
@@ -3005,14 +3004,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 	* after it has been resized.
 	*/
 	OS.gtk_widget_realize (handle);
-	/*
-	* Bug in GTK.  An empty GtkTreeView fails to repaint the focus rectangle
-	* correctly when resized on versions before 2.6.0.  The fix is to force
-	* the widget to redraw.
-	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0) && OS.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) {
-		redraw (false);
-	}
 	return result;
 }
 

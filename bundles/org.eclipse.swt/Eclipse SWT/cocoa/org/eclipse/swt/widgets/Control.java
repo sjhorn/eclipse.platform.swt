@@ -1219,7 +1219,7 @@ boolean dragDetect (int x, int y, boolean filter, boolean [] consume) {
 	return dragging;
 }
 
-boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
+boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
 	return false;
 }
 
@@ -1930,6 +1930,12 @@ public Point getSize () {
 	checkWidget();
 	NSRect rect = topView().frame();
 	return new Point((int)rect.width, (int)rect.height);
+}
+
+public int getTextDirection() {
+	checkWidget ();
+	/* return the widget orientation */
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 float getThemeAlpha () {
@@ -3376,7 +3382,7 @@ boolean sendMouseEvent (NSEvent nsEvent, int type, boolean send) {
 	} else {
 		postEvent (type, event);
 	}
-	if (shell != null) shell.setActiveControl(this);
+	if (shell != null) shell.setActiveControl(this, SWT.MouseDown);
 	return event.doit;
 }
 
@@ -4112,6 +4118,10 @@ void setSmallSize () {
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
 	return forceFocus ();
+}
+
+public void setTextDirection(int textDirection) {
+	checkWidget ();
 }
 
 /**

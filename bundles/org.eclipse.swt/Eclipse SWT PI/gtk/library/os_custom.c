@@ -342,10 +342,6 @@ void swt_fixed_restack (SwtFixed *fixed, GtkWidget *widget, GtkWidget *sibling, 
 	priv->children = g_list_remove_link (priv->children, list);
 	g_list_free_1 (list);
 	
-//	fprintf(stdout, "here1 c=%ld %s\n", child->widget, g_type_name(G_OBJECT_TYPE(child->widget)));
-//	fflush(stdout);
-	
-	
 	list = NULL;
 	if (sibling) {
 		list = priv->children;
@@ -519,6 +515,7 @@ static void swt_fixed_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
 	GList *list;
 	GtkAllocation child_allocation;
 	GtkRequisition requisition;
+	gint w, h;
 
 	gtk_widget_set_allocation (widget, allocation);
 
@@ -542,9 +539,15 @@ static void swt_fixed_size_allocate (GtkWidget *widget, GtkAllocation *allocatio
           child_allocation.y += allocation->y;
         }
 
-		gtk_widget_get_preferred_size (child, &requisition, NULL);
-		child_allocation.width = requisition.width;
-		child_allocation.height = requisition.height;
+		w = child_data->width;
+		h = child_data->height;
+		if (w == -1 || h == -1) {
+			gtk_widget_get_preferred_size (child, &requisition, NULL);
+			if (w == -1) w = requisition.width;
+			if (h == -1) h = requisition.height;
+		}
+		child_allocation.width = w;
+		child_allocation.height = h;
 		
 		gtk_widget_size_allocate (child, &child_allocation);
     }
@@ -567,6 +570,23 @@ void swt_fixed_move (SwtFixed *fixed, GtkWidget *widget, gint x, gint y) {
 	}
 }
 
+void swt_fixed_resize (SwtFixed *fixed, GtkWidget *widget, gint width, gint height) {
+	SwtFixedPrivate *priv = fixed->priv;
+	GList *list;
+
+	list = priv->children;
+	while (list) {
+		SwtFixedChild *child_data = list->data;
+		GtkWidget *child = child_data->widget;
+		if (child == widget) {
+			child_data->width = width;
+			child_data->height = height;
+			break;
+		}
+		list = list->next;
+	}
+}
+
 static void swt_fixed_add (GtkContainer *container, GtkWidget *child) {
 	GtkWidget *widget = GTK_WIDGET (container);
 	SwtFixed *fixed = SWT_FIXED (container);
@@ -576,6 +596,7 @@ static void swt_fixed_add (GtkContainer *container, GtkWidget *child) {
 	child_data = g_new (SwtFixedChild, 1);
 	child_data->widget = child;
   	child_data->x = child_data->y = 0;
+  	child_data->width = child_data->height = -1;
   
 	priv->children = g_list_append (priv->children, child_data);
 	gtk_widget_set_parent (child, widget);

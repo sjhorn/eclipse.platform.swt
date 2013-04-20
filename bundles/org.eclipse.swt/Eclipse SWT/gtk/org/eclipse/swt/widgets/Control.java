@@ -45,7 +45,7 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	long /*int*/ fixedHandle;
-	long /*int*/ redrawWindow, enableWindow;
+	long /*int*/ redrawWindow, enableWindow, provider;
 	int drawCount;
 	Composite parent;
 	Cursor cursor;
@@ -159,17 +159,19 @@ void drawBackground (Control control, long /*int*/ window, long /*int*/ cr, long
 	OS.g_object_unref (gdkGC);
 }
 
-boolean drawGripper (int x, int y, int width, int height, boolean vertical) {
+boolean drawGripper (GC gc, int x, int y, int width, int height, boolean vertical) {
 	long /*int*/ paintHandle = paintHandle ();
 	long /*int*/ window = gtk_widget_get_window (paintHandle);
 	if (window == 0) return false;
 	int orientation = vertical ? OS.GTK_ORIENTATION_HORIZONTAL : OS.GTK_ORIENTATION_VERTICAL;
 	if ((style & SWT.MIRRORED) != 0) x = getClientWidth () - width - x;
 	if (OS.GTK3) {
-		long /*int*/ cairo = OS.gdk_cairo_create (window);
-		long /*int*/ context = OS.gtk_widget_get_style_context(paintHandle);
-		OS.gtk_render_handle(context, cairo, x, y, width, height);
-		Cairo.cairo_destroy (cairo);
+		long /*int*/ context = OS.gtk_widget_get_style_context (paintHandle);
+		OS.gtk_style_context_save (context);
+		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_PANE_SEPARATOR);
+		OS.gtk_style_context_set_state (context, OS.GTK_STATE_FLAG_NORMAL);
+		OS.gtk_render_handle (context, gc.handle, x, y, width, height);
+		OS.gtk_style_context_restore (context);
 	} else {
 		OS.gtk_paint_handle (OS.gtk_widget_get_style (paintHandle), window, OS.GTK_STATE_NORMAL, OS.GTK_SHADOW_OUT, null, paintHandle, new byte [1], x, y, width, height, orientation);
 	}
@@ -266,6 +268,12 @@ public int getOrientation () {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+public int getTextDirection() {
+	checkWidget ();
+	/* return the widget orientation */
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
+
 boolean hasFocus () {
 	return this == display.getFocusControl();
 }
@@ -285,7 +293,7 @@ void hookEvents () {
 
 	/* Connect the mouse signals */
 	long /*int*/ eventHandle = eventHandle ();
-	int eventMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK;
+	int eventMask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_SCROLL_MASK | OS.GDK_SMOOTH_SCROLL_MASK;
 	OS.gtk_widget_add_events (eventHandle, eventMask);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_PRESS_EVENT], 0, display.closures [BUTTON_PRESS_EVENT], false);
 	OS.g_signal_connect_closure_by_id (eventHandle, display.signalIds [BUTTON_RELEASE_EVENT], 0, display.closures [BUTTON_RELEASE_EVENT], false);
@@ -325,9 +333,7 @@ void hookEvents () {
 	int paintMask = OS.GDK_EXPOSURE_MASK | OS.GDK_VISIBILITY_NOTIFY_MASK;
 	OS.gtk_widget_add_events (paintHandle, paintMask);
 
-	if (!OS.GTK3) {
-		OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
-	}
+	OS.g_signal_connect_closure_by_id (paintHandle, display.signalIds [EXPOSE_EVENT], 0, display.closures [EXPOSE_EVENT_INVERSE], false);
 
 	/*
 	* As of GTK 2.17.11, obscured controls no longer send expose 
@@ -694,7 +700,25 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 Point computeNativeSize (long /*int*/ h, int wHint, int hHint, boolean changed) {
 	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT && !OS.GTK3) {
+	if (OS.GTK3){
+		if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
+			GtkRequisition requisition = new GtkRequisition ();
+			OS.gtk_widget_get_preferred_size (h, requisition, null);
+			width = requisition.width;
+			height = requisition.height;
+		} else if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+			int [] minimum_size = new int [1];
+			if (wHint == SWT.DEFAULT) {
+				OS.gtk_widget_get_preferred_width_for_height (h, height, minimum_size, null);
+				width = minimum_size [0];
+			} else {
+				OS.gtk_widget_get_preferred_height_for_width (h, width, minimum_size, null);
+				height = minimum_size [0];
+			}
+		}
+		return new Point(width, height);
+	}
+	if (wHint == SWT.DEFAULT && hHint == SWT.DEFAULT) {
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_size_request (h, requisition);
 		width = OS.GTK_WIDGET_REQUISITION_WIDTH (h);
@@ -853,30 +877,37 @@ void modifyStyle (long /*int*/ handle, long /*int*/ style) {
 void moveHandle (int x, int y) {
 	long /*int*/ topHandle = topHandle ();
 	long /*int*/ parentHandle = parent.parentingHandle ();
-	/*
-	* Feature in GTK.  Calling gtk_fixed_move() to move a child causes
-	* the whole parent to redraw.  This is a performance problem. The
-	* fix is temporarily mark the parent not visible during the move.
-	* 
-	* NOTE: Because every widget in SWT has an X window, the new and
-	* old bounds of the child are correctly redrawn.
-	* 
-	* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
-	*/
-	if (!OS.GTK3) {
+	if (OS.GTK3) {
+		OS.swt_fixed_move (parentHandle, topHandle, x, y);
+	} else {
+		/*
+		* Feature in GTK.  Calling gtk_fixed_move() to move a child causes
+		* the whole parent to redraw.  This is a performance problem. The
+		* fix is temporarily mark the parent not visible during the move.
+		* 
+		* NOTE: Because every widget in SWT has an X window, the new and
+		* old bounds of the child are correctly redrawn.
+		* 
+		* NOTE: There is no API in GTK 3 to only set the GTK_VISIBLE bit.
+		*/
 		boolean reset = gtk_widget_get_visible (parentHandle);
 		gtk_widget_set_visible (parentHandle, false);
 		OS.gtk_fixed_move (parentHandle, topHandle, x, y);
 		gtk_widget_set_visible (parentHandle, reset);
-	} else {
-		OS.swt_fixed_move (parentHandle, topHandle, x, y);
 	}
 }
 
 void resizeHandle (int width, int height) {
 	long /*int*/ topHandle = topHandle ();
-	OS.gtk_widget_set_size_request (topHandle, width, height);
-	if (topHandle != handle) OS.gtk_widget_set_size_request (handle, width, height);
+	if (OS.GTK3) {
+		OS.swt_fixed_resize (OS.gtk_widget_get_parent (topHandle), topHandle, width, height);
+		if (topHandle != handle) {
+			OS.swt_fixed_resize (OS.gtk_widget_get_parent (handle), handle, width, height);
+		}
+	} else {
+		OS.gtk_widget_set_size_request (topHandle, width, height);
+		if (topHandle != handle) OS.gtk_widget_set_size_request (handle, width, height);
+	}
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -2461,6 +2492,9 @@ GdkColor getContextBackground () {
 	long /*int*/ context = OS.gtk_widget_get_style_context (fontHandle);
 	GdkRGBA rgba = new GdkRGBA ();
 	OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+	if (rgba.alpha == 0) {
+		return display.COLOR_WIDGET_BACKGROUND;
+	}
 	GdkColor color = new GdkColor ();
 	color.red = (short)(rgba.red * 0xFFFF);
 	color.green = (short)(rgba.green * 0xFFFF);
@@ -2871,10 +2905,19 @@ public boolean getVisible () {
 
 Point getThickness (long /*int*/ widget) {
 	if (OS.GTK3) {
-		GtkBorder padding = new GtkBorder();
+		int xthickness = 0, ythickness = 0;
+		GtkBorder tmp = new GtkBorder();
 		long /*int*/ context = OS.gtk_widget_get_style_context (widget);
-		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, padding);
-		return new Point (padding.left, padding.top);
+		OS.gtk_style_context_save (context);
+		OS.gtk_style_context_add_class (context, OS.GTK_STYLE_CLASS_FRAME);
+		OS.gtk_style_context_get_padding (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		xthickness += tmp.left;
+		ythickness += tmp.top;
+		OS.gtk_style_context_get_border (context, OS.GTK_STATE_FLAG_NORMAL, tmp);
+		xthickness += tmp.left;
+		ythickness += tmp.top;
+		OS.gtk_style_context_restore (context);
+		return new Point (xthickness, ythickness);
 	}
 	long /*int*/ style = OS.gtk_widget_get_style (widget);
 	return new Point (OS.gtk_style_get_xthickness (style), OS.gtk_style_get_ythickness (style));
@@ -2945,7 +2988,7 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event, bo
 		result = sendMouseEvent (SWT.MouseDoubleClick, gdkEvent.button, display.clickCount, 0, false, gdkEvent.time, gdkEvent.x_root, gdkEvent.y_root, false, gdkEvent.state) ? 0 : 1;
 		if (isDisposed ()) return 1;
 	}
-	if (!shell.isDisposed ()) shell.setActiveControl (this);
+	if (!shell.isDisposed ()) shell.setActiveControl (this, SWT.MouseDown);
 	return result;
 }
 
@@ -3240,6 +3283,16 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 		x = pointer_x [0];
 		y = pointer_y [0];
 		state = mask [0];
+	}
+	if (OS.GTK3 && this != display.currentControl) {
+		if (display.currentControl != null && !display.currentControl.isDisposed ()) {
+			display.removeMouseHoverTimeout (display.currentControl.handle);
+			display.currentControl.sendMouseEvent (SWT.MouseExit,  0, gdkEvent.time, x, y, false, state);
+		}
+		if (!isDisposed ()) {
+			display.currentControl = this;
+			sendMouseEvent (SWT.MouseEnter, 0, gdkEvent.time, x, y, false, state);
+		}
 	}
 	int result = sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x, y, gdkEvent.is_hint != 0, state) ? 0 : 1;
 	return result;
@@ -3901,6 +3954,25 @@ public void setBackground (Color color) {
 	}
 }
 
+void setBackgroundColor (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+}
+
+void setBackgroundColorGradient (long /*int*/ context, long /*int*/ handle, GdkRGBA rgba) {
+	String css ="* {\n";
+	if (rgba != null) {
+		String color = "rgba(" + (int)(rgba.red * 255) + "," + (int)(rgba.green * 255) + "," + (int)(rgba.blue * 255) + "," + (int)(rgba.alpha * 255) + ")";
+		css += "background-image: -gtk-gradient (linear, 0 0, 0 1, color-stop(0, " + color + "), color-stop(1, " + color + "));\n";
+	}
+	css += "}\n";
+	if (provider == 0) {
+		provider = OS.gtk_css_provider_new ();
+		OS.gtk_style_context_add_provider (context, provider, OS.GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+		OS.g_object_unref (provider);
+	}
+	OS.gtk_css_provider_load_from_data (provider, Converter.wcsToMbcs (null, css, true), -1, null);
+}
+
 void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 	if (OS.GTK3) {
 		GdkRGBA rgba = null;
@@ -3920,7 +3992,9 @@ void setBackgroundColor (long /*int*/ handle, GdkColor color) {
 			rgba.green = (color.green & 0xFFFF) / (float)0xFFFF;
 			rgba.blue = (color.blue & 0xFFFF) / (float)0xFFFF;
 		}
-		OS.gtk_widget_override_background_color (handle, OS.GTK_STATE_FLAG_NORMAL, rgba);
+		long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+		setBackgroundColor (context, handle, rgba);
+		OS.gtk_style_context_invalidate (context);
 		return;
 	}
 	int index = OS.GTK_STATE_NORMAL;
@@ -4544,6 +4618,10 @@ public void setRedraw (boolean redraw) {
 boolean setTabItemFocus (boolean next) {
 	if (!isShowing ()) return false;
 	return forceFocus ();
+}
+
+public void setTextDirection(int textDirection) {
+	checkWidget ();
 }
 
 /**
@@ -5300,13 +5378,28 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 			if ((state & OBSCURED) != 0) break;
 			if (OS.USE_CAIRO) {
 				Control control = findBackgroundControl ();
-				if (control != null && control.backgroundImage != null) {
-					GdkEventExpose gdkEvent = new GdkEventExpose ();
-					OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
-					long /*int*/ paintWindow = paintWindow();
-					long /*int*/ window = gdkEvent.window;
-					if (window != paintWindow) break;
-					drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+				boolean draw = control != null && control.backgroundImage != null;
+				if (OS.GTK3 && !draw && (state & CANVAS) != 0) {
+					GdkRGBA rgba = new GdkRGBA();
+					long /*int*/ context = OS.gtk_widget_get_style_context (handle);
+					OS.gtk_style_context_get_background_color (context, OS.GTK_STATE_FLAG_NORMAL, rgba);
+					draw = rgba.alpha == 0;
+				}
+				if (draw) {
+					if (OS.GTK3) {
+						long /*int*/ cairo = arg0;
+						GdkRectangle rect = new GdkRectangle ();
+						OS.gdk_cairo_get_clip_rectangle (cairo, rect);
+						if (control == null) control = this;
+						drawBackground (control, 0, cairo, 0, rect.x, rect.y, rect.width, rect.height);
+					} else {
+						GdkEventExpose gdkEvent = new GdkEventExpose ();
+						OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
+						long /*int*/ paintWindow = paintWindow();
+						long /*int*/ window = gdkEvent.window;
+						if (window != paintWindow) break;
+						drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
+					}
 				}
 			}
 			if (OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) {

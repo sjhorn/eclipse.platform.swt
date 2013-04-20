@@ -1500,12 +1500,18 @@ public String getBrowserType () {
 
 static byte[] getJSLibPathBytes () {
 	if (jsLibPathBytes == null) {
-		String jsLibraryName = IsPre_4 ? MozillaDelegate.getJSLibraryName_Pre4 () : MozillaDelegate.getJSLibraryName ();
-		String mozillaPath = getMozillaPath () + jsLibraryName + '\0';
-		try {
-			jsLibPathBytes = mozillaPath.getBytes ("UTF-8"); //$NON-NLS-1$
-		} catch (UnsupportedEncodingException e) {
-			jsLibPathBytes = mozillaPath.getBytes ();
+		String[] names = IsPre_4 ? new String[] {MozillaDelegate.getJSLibraryName_Pre4 ()} : MozillaDelegate.getJSLibraryNames ();
+		for (int i = 0; i < names.length; i++) {
+			File file = new File (getMozillaPath (), names[i]);
+			if (file.exists ()) {
+				String pathString = file.getAbsolutePath () + '\0';
+				try {
+					jsLibPathBytes = pathString.getBytes ("UTF-8"); //$NON-NLS-1$
+				} catch (UnsupportedEncodingException e) {
+					jsLibPathBytes = pathString.getBytes ();
+				}
+				break;
+			}
 		}
 	}
 	return jsLibPathBytes;

@@ -55,10 +55,12 @@ WGL_OBJS   = wgl.obj wgl_structs.obj wgl_stats.obj
 XULRUNNER_PREFIX = swt-xulrunner
 XULRUNNER_LIB = $(XULRUNNER_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 XULRUNNER_LIBS = Advapi32.lib $(XULRUNNER_SDK)\lib\xpcomglue.lib
-XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
+XULRUNNER_OBJS = xpcom.obj xpcom_custom.obj xpcom_structs.obj xpcom_stats.obj
+XPCOMINIT_OBJS = xpcominit.obj xpcominit_structs.obj xpcominit_stats.obj
 
 MOZILLACFLAGS = -c \
 	-O1 \
+	$(MOZILLACFLAGS) \
 	-DSWT_VERSION=$(SWT_VERSION) \
 	$(NATIVE_STATS) \
 	-MD \
@@ -161,7 +163,16 @@ make_wgl: $(WGL_OBJS) swt_wgl.res
 	link @templrf
 	del templrf
 	
-make_xulrunner: $(XULRUNNER_OBJS) swt_xpcom.res
+make_xulrunner: $(XULRUNNER_OBJS) $(XPCOMINIT_OBJS) swt_xpcom.res
+	echo $(ldebug) $(dlllflags) >templrf
+	echo $(XULRUNNER_LIBS) >>templrf
+	echo $(XULRUNNER_OBJS) $(XPCOMINIT_OBJS) >>templrf
+	echo swt_xpcom.res >>templrf
+	echo -out:$(XULRUNNER_LIB) >>templrf
+	link @templrf
+	del templrf
+	
+make_xulrunner64: $(XULRUNNER_OBJS) swt_xpcom.res
 	echo $(ldebug) $(dlllflags) >templrf
 	echo $(XULRUNNER_LIBS) >>templrf
 	echo $(XULRUNNER_OBJS) >>templrf

@@ -1804,6 +1804,23 @@ public class SWT {
 	public static final int TRANSPARENT = 1 << 30;
 	
 	/**
+	 * Style constant to indicate base text direction (value is 1&lt;&lt;31).
+	 * <p>
+	 * When the bit is set, text direction mismatches the widget orientation.
+	 * <br>Note that this is a <em>HINT</em>.
+	 * </p>
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * </ul></p>
+	 * 
+	 * @see org.eclipse.swt.widgets.Control#setTextDirection(int)
+	 * @see org.eclipse.swt.widgets.Control#getTextDirection()
+	 * 
+	 * @since 3.102
+	 */
+	public static final int FLIP_TEXT_DIRECTION = 1 << 31;
+
+	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
 	 * <p><b>Used By:</b><ul>
@@ -3192,7 +3209,7 @@ public class SWT {
 	/**
 	 * System color used to paint link text (value is 36).
 	 * 
-	 * @since 3.101
+	 * @since 3.102
 	 */
 	public static final int COLOR_LINK_FOREGROUND = 36;
 	
