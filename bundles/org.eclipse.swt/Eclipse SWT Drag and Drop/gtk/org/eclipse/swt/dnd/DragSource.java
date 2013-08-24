@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -299,9 +299,13 @@ void drag(Event dragEvent) {
 	Image image = event.image; 
 	long /*int*/ context = OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 	if (context != 0 && image != null) {
-		long /*int*/ pixbuf = ImageList.createPixbuf(image);
-		OS.gtk_drag_set_icon_pixbuf(context, pixbuf, 0, 0);
-		OS.g_object_unref(pixbuf);
+		if (OS.GTK3) {
+			OS.gtk_drag_set_icon_surface(context, image.surface);
+		} else {
+			long /*int*/ pixbuf = ImageList.createPixbuf(image);
+			OS.gtk_drag_set_icon_pixbuf(context, pixbuf, 0, 0);
+			OS.g_object_unref(pixbuf);
+		}
 	}
 }
 

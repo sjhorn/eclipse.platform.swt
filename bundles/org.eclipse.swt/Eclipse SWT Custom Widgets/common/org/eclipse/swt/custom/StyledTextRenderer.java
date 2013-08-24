@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -941,6 +941,7 @@ TextLayout getTextLayout(int lineIndex, int orientation, int width, int lineSpac
 							int end = imeRanges[i*2+1] - lineOffset;
 							TextStyle imeStyle = imeStyles[i], userStyle;
 							for (int j = start; j <= end; j++) {
+								if (!(0 <= j && j < length)) break;
 								userStyle = layout.getStyle(j);
 								if (userStyle == null && j > 0) userStyle = layout.getStyle(j - 1);
 								if (userStyle == null && j + 1 < length) userStyle = layout.getStyle(j + 1);

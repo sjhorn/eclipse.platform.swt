@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2010 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -169,7 +169,7 @@ void createHandle (int index) {
 	* that a bug has been logged with GTK about this issue.
 	* (http://bugzilla.gnome.org/show_bug.cgi?id=475909) 
 	*/
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || (style & SWT.VERTICAL) != 0) {
+	if ((style & SWT.VERTICAL) != 0) {
 		gtk_widget_set_can_focus (handle, true);
 	}
 	OS.gtk_container_add (fixedHandle, handle);

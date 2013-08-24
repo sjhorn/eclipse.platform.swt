@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -690,13 +690,13 @@ static Hashtable gio_getMimeInfo() {
 				mimeTable = new Hashtable();
 				modTime = modTimestamp[0];
 				long /*int*/ reader = OS.g_data_input_stream_new (fileInputStream);
-				int[] length = new int[1];
+				long /*int*/ [] length = new long /*int*/ [1];
 				
 				if (reader != 0) {
 					long /*int*/ linePtr = OS.g_data_input_stream_read_line (reader, length, 0, 0);
 					while (linePtr != 0) {
-						byte[] lineBytes = new byte[length[0]];
-						OS.memmove(lineBytes, linePtr, length[0]);
+						byte[] lineBytes = new byte[(int) length[0]];
+						OS.memmove(lineBytes, linePtr, (int) length[0]);
 						String line = new String (Converter.mbcsToWcs (null, lineBytes));
 			
 						int separatorIndex = line.indexOf (':');

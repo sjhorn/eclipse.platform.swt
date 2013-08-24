@@ -1155,6 +1155,8 @@ public Widget findWidget (long /*int*/ handle, long /*int*/ id) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
+ * @noreference This method is not intended to be referenced by clients.
+ * 
  * @since 3.3
  */
 public Widget findWidget (Widget widget, long /*int*/ id) {
@@ -4482,11 +4484,13 @@ void setMenuBar (Menu menu) {
 			* menu for languages other than english.  The fix is to detect
 			* it ourselves.
 			*/
-			NSMenu submenu = nsItem.submenu();
-			if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) { 
-				application.setHelpMenu(submenu);
+			if (OS.VERSION >= 0x1060) {
+				NSMenu submenu = nsItem.submenu();
+				if (submenu != null && submenu.title().getString().equals(SWT.getMessage("SWT_Help"))) { 
+					application.setHelpMenu(submenu);
+				}
 			}
-			
+
 			nsItem.setMenu(null);
 			menubar.addItem(nsItem);
 			
@@ -5276,7 +5280,9 @@ static long /*int*/ applicationProc(long /*int*/ id, long /*int*/ sel, long /*in
 		}
 		new NSApplication(arg0).replyToOpenOrPrint(OS.NSApplicationDelegateReplySuccess);
 	}  else if (sel == OS.sel_applicationShouldHandleReopen_hasVisibleWindows_) {
-		return 1;
+		final Event event = new Event();
+		display.sendEvent(SWT.Activate, event);
+		return event.doit ? 1 : 0;
 	}
 	return 0;
 }

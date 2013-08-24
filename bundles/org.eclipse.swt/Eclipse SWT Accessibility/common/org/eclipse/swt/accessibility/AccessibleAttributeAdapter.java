@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2010 IBM Corporation and others.
+ * Copyright (c) 2009, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -38,6 +38,9 @@ public class AccessibleAttributeAdapter implements AccessibleAttributeListener {
 	 * <li>[out] justify - whether or not to justify the text</li>
 	 * <li>[out] alignment - one of <code>SWT#LEFT</code>, <code>SWT#RIGHT</code> or <code>SWT#CENTER</code></li>
 	 * <li>[out] indent - the indent in pixels</li>
+	 * <li>[out] groupLevel - the level of this accessible in its group</li>
+	 * <li>[out] groupCount - the number of similar children in this accessible's group</li>
+	 * <li>[out] groupIndex - the index of this accessible in its group</li>
 	 * <li>[out] attributes - an array of alternating key and value Strings
 	 * 		which represent additional (i.e. non predefined) attributes</li>
 	 * </ul>

@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2006 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2006, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -39,14 +39,6 @@ public class nsIPrefLocalizedString extends nsISupports {
 
 	public nsIPrefLocalizedString(long /*int*/ address) {
 		super(address);
-	}
-
-	public int GetData(long /*int*/[] aData) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aData);
-	}
-
-	public int SetData(char[] aData) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aData);
 	}
 
 	public int ToString(long /*int*/[] _retval) {

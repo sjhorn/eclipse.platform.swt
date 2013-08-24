@@ -22,14 +22,14 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
 public class nsIWebBrowser extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 9 : 7);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 9 : 7);
 
 	public static final String NS_IWEBBROWSER_IID_STR =
 		"69e5df00-7b8b-11d3-af61-00a024ffc08c";
@@ -55,16 +55,8 @@ public class nsIWebBrowser extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aListener, aIID);
 	}
 
-	public int GetContainerWindow(long /*int*/[] aContainerWindow) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aContainerWindow);
-	}
-
 	public int SetContainerWindow(long /*int*/ aContainerWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aContainerWindow);
-	}
-
-	public int GetParentURIContentListener(long /*int*/[] aParentURIContentListener) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aParentURIContentListener);
 	}
 
 	public int SetParentURIContentListener(long /*int*/ aParentURIContentListener) {
@@ -73,15 +65,5 @@ public class nsIWebBrowser extends nsISupports {
 
 	public int GetContentDOMWindow(long /*int*/[] aContentDOMWindow) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aContentDOMWindow);
-	}
-
-	public int GetIsActive(int[] aIsActive) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aIsActive);
-	}
-
-	public int SetIsActive(int aIsActive) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aIsActive);
 	}
 }

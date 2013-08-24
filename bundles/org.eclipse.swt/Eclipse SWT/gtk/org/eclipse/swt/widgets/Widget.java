@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -332,11 +332,6 @@ void checkOrientation (Widget parent) {
 		}
 	}
 	style = checkBits (style, SWT.LEFT_TO_RIGHT, SWT.RIGHT_TO_LEFT, 0, 0, 0, 0);
-	/* Versions of GTK prior to 2.8 do not render RTL text properly */
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
-		style &= ~SWT.RIGHT_TO_LEFT;
-		style |= SWT.LEFT_TO_RIGHT;			
-	}
 }
 
 /**
@@ -1829,14 +1824,6 @@ long /*int*/ sizeAllocateProc (long /*int*/ handle, long /*int*/ arg0, long /*in
 long /*int*/ sizeRequestProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ user_data) {
 	return 0;
 }
-long /*int*/ g_object_ref_sink (long /*int*/ object) {
-	if (OS.GLIB_VERSION >= OS.VERSION (2, 10, 0)) { 
-		return OS.g_object_ref_sink (object);
-	} else {
-		OS.gtk_object_sink (object);
-	}
-	return 0;
-}
 
 boolean gtk_widget_get_sensitive (long /*int*/ widget) {
 	if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
@@ -2184,4 +2171,13 @@ void gtk_widget_get_preferred_size (long /*int*/ widget, GtkRequisition requisit
 		OS.gtk_widget_size_request (widget, requisition);
 	}
 }
+
+void gtk_image_set_from_pixbuf (long /*int*/ imageHandle, long /*int*/ pixbuf){
+	if (OS.GTK3) {
+		OS.gtk_image_set_from_gicon(imageHandle, pixbuf, OS.GTK_ICON_SIZE_SMALL_TOOLBAR);
+	} else {
+		OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+	}
+}
+
 }

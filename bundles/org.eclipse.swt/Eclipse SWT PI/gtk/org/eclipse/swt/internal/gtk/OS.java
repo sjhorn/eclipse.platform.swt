@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+ * Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -607,6 +607,7 @@ public class OS extends C {
 	public static final byte[] model = ascii("model");
 	public static final byte[] spacing = ascii("spacing");
 	public static final byte[] pixbuf = ascii("pixbuf");
+	public static final byte[] gicon = ascii("gicon");
 	public static final byte[] text = ascii("text");
 	public static final byte[] xalign = ascii("xalign");
 	public static final byte[] ypad = ascii("ypad");
@@ -694,9 +695,7 @@ public static final native int PangoLayoutRun_sizeof();
 public static final native int PangoLogAttr_sizeof();
 public static final native int PangoRectangle_sizeof();
 public static final native int XAnyEvent_sizeof();
-public static final native int XClientMessageEvent_sizeof();
 public static final native int XEvent_sizeof();
-public static final native int XCrossingEvent_sizeof();
 public static final native int XExposeEvent_sizeof();
 public static final native int XFocusChangeEvent_sizeof();
 public static final native int XVisibilityEvent_sizeof();
@@ -734,10 +733,6 @@ public static final native int GTK_WIDGET_Y(long /*int*/ widget);
 public static final native int GTK_RANGE_SLIDER_START(long /*int*/ widget);
 /** @param widget cast=(GtkRange *) */
 public static final native int GTK_RANGE_SLIDER_END(long /*int*/ widget);
-/** @param widget cast=(GtkScrolledWindow *) */
-public static final native long /*int*/ GTK_SCROLLED_WINDOW_HSCROLLBAR(long /*int*/ widget);
-/** @param widget cast=(GtkScrolledWindow *) */
-public static final native long /*int*/ GTK_SCROLLED_WINDOW_VSCROLLBAR(long /*int*/ widget);
 /** @param widget cast=(GtkScrolledWindow *) */
 public static final native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(long /*int*/ widget);
 /**
@@ -783,7 +778,6 @@ public static final native long /*int*/ X_EVENT_WINDOW(long /*int*/ xevent);
 public static final int Above = 0;
 public static final int Below = 1;
 public static final int ButtonRelease = 5;
-public static final int ClientMessage = 33;
 public static final int CurrentTime = 0;
 public static final int CWSibling = 0x20;
 public static final int CWStackMode = 0x40;
@@ -810,7 +804,6 @@ public static final int RevertToParent = 2;
 public static final int VisibilityChangeMask = 1 << 16;
 public static final int VisibilityFullyObscured = 2;
 public static final int VisibilityNotify = 15;
-public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
 public static final native int _Call(long /*int*/ proc, long /*int*/ arg1, long /*int*/ arg2);
 public static final int Call(long /*int*/ proc, long /*int*/ arg1, long /*int*/ arg2) {
 	lock.lock();
@@ -1046,20 +1039,6 @@ public static final int XReconfigureWMWindow(long /*int*/ display, long /*int*/ 
 	lock.lock();
 	try {
 		return _XReconfigureWMWindow(display, window, screen, valueMask, values);
-	} finally {
-		lock.unlock();
-	}
-}
-/**
- * @param display cast=(Display *)
- * @param w cast=(Window)
- * @param event_send cast=(XEvent *)
- */
-public static final native int _XSendEvent(long /*int*/ display, long /*int*/ w, boolean propogate, long /*int*/ event_mask, long /*int*/ event_send);
-public static final int XSendEvent(long /*int*/ display, long /*int*/ w, boolean propogate, long /*int*/ event_mask, long /*int*/ event_send) {
-	lock.lock();
-	try {
-		return _XSendEvent(display, w, propogate, event_mask, event_send);
 	} finally {
 		lock.unlock();
 	}
@@ -1328,12 +1307,6 @@ public static final void gdk_window_remove_filter(long /*int*/ window, long /*in
 		lock.unlock();
 	}
 }
-/**
- * @param dest cast=(void *)
- * @param src cast=(const void *),flags=no_out
- * @param size cast=(size_t)
- */
-public static final native void memmove(long /*int*/ dest, XClientMessageEvent src, long /*int*/ size);
 /**
  * @param dest cast=(void *)
  * @param src cast=(const void *),flags=no_out
@@ -2044,8 +2017,8 @@ public static final long /*int*/ g_data_input_stream_new(long /*int*/ input_stre
 	}
 }
 /** @method flags=dynamic */
-public static final native long /*int*/ _g_data_input_stream_read_line(long /*int*/ stream, int[] count, long /*int*/ cancellable, long /*int*/ error);
-public static final long /*int*/ g_data_input_stream_read_line(long /*int*/ stream, int[] count, long /*int*/ cancellable, long /*int*/ error) {
+public static final native long /*int*/ _g_data_input_stream_read_line(long /*int*/ stream, long /*int*/ [] count, long /*int*/ cancellable, long /*int*/ error);
+public static final long /*int*/ g_data_input_stream_read_line(long /*int*/ stream, long /*int*/ [] count, long /*int*/ cancellable, long /*int*/ error) {
 	lock.lock();
 	try {
 		return _g_data_input_stream_read_line(stream, count, cancellable, error);
@@ -3309,7 +3282,6 @@ public static final long /*int*/ g_type_register_static (long /*int*/ parent_typ
 }
 /** 
  * @method flags=dynamic
- * @param vtable cast=(GThreadFunctions *) 
  */
 public static final native void _g_thread_init(long /*int*/ vtable);
 public static final void g_thread_init(long /*int*/ vtable) {
@@ -5163,19 +5135,6 @@ public static final int gdk_screen_get_n_monitors(long /*int*/ screen) {
 		lock.unlock();
 	}
 }
-/**
- * @method flags=dynamic
- * @param screen cast=(GdkScreen *)
- */
-public static final native int _gdk_screen_get_number(long /*int*/ screen);
-public static final int gdk_screen_get_number(long /*int*/ screen) {
-	lock.lock();
-	try {
-		return _gdk_screen_get_number(screen);
-	} finally {
-		lock.unlock();
-	}
-}
 public static final native int _gdk_screen_height();
 public static final int gdk_screen_height() {
 	lock.lock();
@@ -6735,6 +6694,26 @@ public static final void gtk_combo_box_remove_text(long /*int*/ combo_box, int p
 	}
 }
 /** @method flags=dynamic */
+public static final native void _gtk_combo_box_text_remove(long /*int*/ combo_box, int position);
+public static final void gtk_combo_box_text_remove(long /*int*/ combo_box, int position) {
+	lock.lock();
+	try {
+		_gtk_combo_box_text_remove(combo_box, position);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_combo_box_text_remove_all(long /*int*/ combo_box);
+public static final void gtk_combo_box_text_remove_all(long /*int*/ combo_box) {
+	lock.lock();
+	try {
+		_gtk_combo_box_text_remove_all(combo_box);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
 public static final native int _gtk_combo_box_get_active(long /*int*/ combo_box);
 public static final int gtk_combo_box_get_active(long /*int*/ combo_box) {
 	lock.lock();
@@ -7002,6 +6981,16 @@ public static final void gtk_drag_set_icon_pixbuf(long /*int*/ context, long /*i
 	lock.lock();
 	try {
 		_gtk_drag_set_icon_pixbuf(context, pixbuf, hot_x, hot_y);
+	} finally {
+		lock.unlock();
+	}
+}
+/** @method flags=dynamic */
+public static final native void _gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface);
+public static final void gtk_drag_set_icon_surface(long /*int*/ context, long /*int*/ surface) {
+	lock.lock();
+	try {
+		_gtk_drag_set_icon_surface(context, surface);
 	} finally {
 		lock.unlock();
 	}
@@ -8297,6 +8286,20 @@ public static final void gtk_image_set_from_pixbuf(long /*int*/ image, long /*in
 	}
 }
 /**
+ * @method flags=dynamic
+ * @param image cast=(GtkImage *)
+ * @param size cast=(GtkIconSize)
+ */
+public static final native void _gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size);
+public static final void gtk_image_set_from_gicon(long /*int*/ image, long /*int*/ gicon, int size) {
+	lock.lock();
+	try {
+		_gtk_image_set_from_gicon(image, gicon, size);
+	} finally {
+		lock.unlock();
+	}
+}
+/**
  * @param argc cast=(int *)
  * @param argv cast=(char ***)
  */
@@ -8989,17 +8992,9 @@ public static final void gtk_notebook_set_tab_pos(long /*int*/ notebook, int pos
 		lock.unlock();
 	}
 }
-/** @method flags=dynamic */
-public static final native void _gtk_object_sink(long /*int*/ object);
-public static final void gtk_object_sink(long /*int*/ object) {
-	lock.lock();
-	try {
-		_gtk_object_sink(object);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @method flags=dynamic */
+/** 
+ * @param object cast=(GObject *)
+ */
 public static final native long /*int*/ _g_object_ref_sink(long /*int*/ object);
 public static final long /*int*/ g_object_ref_sink(long /*int*/ object) {
 	lock.lock();
@@ -9691,16 +9686,6 @@ public static final boolean gtk_paper_size_is_custom(long /*int*/ size) {
 	lock.lock();
 	try {
 		return _gtk_paper_size_is_custom(size);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param plug cast=(GtkPlug *) */
-public static final native long /*int*/ _gtk_plug_get_id(long /*int*/ plug);
-public static final long /*int*/ gtk_plug_get_id(long /*int*/ plug) {
-	lock.lock();
-	try {
-		return _gtk_plug_get_id(plug);
 	} finally {
 		lock.unlock();
 	}
@@ -10397,6 +10382,7 @@ public static final void gtk_rc_style_set_text(long /*int*/ style, int index, Gd
 	}
 }
 /**
+ * @method flags=dynamic
  * @param scrolled_window cast=(GtkScrolledWindow *)
  * @param child cast=(GtkWidget *)
  */
@@ -11464,14 +11450,14 @@ public static final void gtk_text_buffer_insert(long /*int*/ buffer, long /*int*
 }
 /**
  * @param buffer cast=(GtkTextBuffer *)
- * @param mark cast=(GtkTextMark *)
- * @param where cast=(const GtkTextIter *)
+ * @param ins cast=(const GtkTextIter *)
+ * @param bound cast=(const GtkTextIter *)
  */
-public static final native void _gtk_text_buffer_move_mark(long /*int*/ buffer, long /*int*/ mark, byte[] where);
-public static final void gtk_text_buffer_move_mark(long /*int*/ buffer, long /*int*/ mark, byte[] where) {
+public static final native void _gtk_text_buffer_select_range (long /*int*/ buffer, byte[] ins, byte[] bound);
+public static final void gtk_text_buffer_select_range (long /*int*/ buffer, byte[] ins, byte[] bound) {
 	lock.lock();
 	try {
-		_gtk_text_buffer_move_mark(buffer, mark, where);
+		_gtk_text_buffer_select_range(buffer, ins, bound);
 	} finally {
 		lock.unlock();
 	}
@@ -12934,16 +12920,6 @@ public static final void gtk_tree_view_set_drag_dest_row(long /*int*/ view, long
 	lock.lock();
 	try {
 		_gtk_tree_view_set_drag_dest_row(view, path, pos);
-	} finally {
-		lock.unlock();
-	}
-}
-/** @param view cast=(GtkTreeView *) */
-public static final native void _gtk_tree_view_set_enable_search (long /*int*/ view, boolean enable_search);
-public static final void gtk_tree_view_set_enable_search (long /*int*/ view, boolean enable_search) {
-	lock.lock();
-	try {
-		_gtk_tree_view_set_enable_search(view, enable_search);
 	} finally {
 		lock.unlock();
 	}

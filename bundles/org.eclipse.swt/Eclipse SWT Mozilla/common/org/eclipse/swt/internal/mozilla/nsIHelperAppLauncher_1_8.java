@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,39 +41,7 @@ public class nsIHelperAppLauncher_1_8 extends nsICancelable {
 		super(address);
 	}
 
-	public int GetMIMEInfo(long /*int*/[] aMIMEInfo) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 1, getAddress(), aMIMEInfo);
-	}
-
-	public int GetSource(long /*int*/[] aSource) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 2, getAddress(), aSource);
-	}
-
-	public int GetSuggestedFileName(long /*int*/ aSuggestedFileName) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 3, getAddress(), aSuggestedFileName);
-	}
-
 	public int SaveToDisk(long /*int*/ aNewFileLocation, int aRememberThisPreference) {
 		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 4, getAddress(), aNewFileLocation, aRememberThisPreference);
-	}
-
-	public int LaunchWithApplication(long /*int*/ aApplication, int aRememberThisPreference) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 5, getAddress(), aApplication, aRememberThisPreference);
-	}
-
-	public int SetWebProgressListener(long /*int*/ aWebProgressListener) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 6, getAddress(), aWebProgressListener);
-	}
-
-	public int CloseProgressWindow() {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 7, getAddress());
-	}
-
-	public int GetTargetFile(long /*int*/[] aTargetFile) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 8, getAddress(), aTargetFile);
-	}
-
-	public int GetTimeDownloadStarted(long /*int*/ aTimeDownloadStarted) {
-		return XPCOM.VtblCall(nsICancelable.LAST_METHOD_ID + 9, getAddress(), aTimeDownloadStarted);
 	}
 }

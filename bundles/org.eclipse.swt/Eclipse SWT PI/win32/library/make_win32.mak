@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2000, 2012 IBM Corporation and others.
+# Copyright (c) 2000, 2013 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -37,8 +37,8 @@ AWT_LIB    = $(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 AWT_LIBS   = "$(JAVA_HOME)\jre\bin\jawt.lib"
 AWT_OBJS   = swt_awt.obj
 
-WEBKIT_DIR 	  = S:\swt-builddir\webkit\WebKit-r72896
-WEBKIT_SUPPORT_DIR = S:\swt-builddir\webkit\WebKitSupportLibrary
+WEBKIT_DIR 	  = $(WEBKIT_HOME)\WebKit-r72896
+WEBKIT_SUPPORT_DIR = $(WEBKIT_HOME)\WebKitSupportLibrary
 WEBKIT_PREFIX = swt-webkit
 WEBKIT_LIB    = $(WEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 WEBKIT_LIBS   = $(WEBKIT_DIR)\lib\webkit.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CFNetwork.lib $(WEBKIT_SUPPORT_DIR)\win\lib\CoreFoundation.lib

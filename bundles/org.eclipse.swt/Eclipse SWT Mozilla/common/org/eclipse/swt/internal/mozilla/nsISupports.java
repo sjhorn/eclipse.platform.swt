@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -38,7 +38,7 @@ public class nsISupports {
 	static final int FIRST_METHOD_ID = IsSolaris ? 2 : 0;
 	static final int LAST_METHOD_ID = FIRST_METHOD_ID + 2;
 
-	public static boolean IsXULRunner10;
+	public static boolean IsXULRunner10, IsXULRunner17;
 	
 	public static final String NS_ISUPPORTS_IID_STR =
 		"00000000-0000-0000-c000-000000000046";

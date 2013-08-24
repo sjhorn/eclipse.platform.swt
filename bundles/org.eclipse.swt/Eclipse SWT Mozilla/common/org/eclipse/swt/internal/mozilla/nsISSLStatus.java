@@ -22,14 +22,14 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
 public class nsISSLStatus extends nsISupports {
 
-	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + (IsXULRunner10 ? 8 : 7);
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + ((IsXULRunner10 || IsXULRunner17) ? 8 : 7);
 
 	public static final String NS_ISSLSTATUS_IID_STR =
 		"cfede939-def1-49be-81ed-d401b3a07d1c";
@@ -51,18 +51,6 @@ public class nsISSLStatus extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aServerCert);
 	}
 
-	public int GetCipherName(long /*int*/[] aCipherName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aCipherName);
-	}
-
-	public int GetKeyLength(int[] aKeyLength) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aKeyLength);
-	}
-
-	public int GetSecretKeyLength(int[] aSecretKeyLength) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aSecretKeyLength);
-	}
-
 	public int GetIsDomainMismatch(int[] aIsDomainMismatch) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aIsDomainMismatch);
 	}
@@ -73,10 +61,5 @@ public class nsISSLStatus extends nsISupports {
 
 	public int GetIsUntrusted(int[] aIsUntrusted) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aIsUntrusted);
-	}
-	
-	public int GetIsExtendedValidation(int[] aIsExtendedValidation) {
-		if (!IsXULRunner10) return XPCOM.NS_COMFALSE;
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aIsExtendedValidation);
 	}
 }

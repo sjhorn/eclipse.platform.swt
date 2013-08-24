@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -103,6 +103,7 @@ class IE extends WebBrowser {
 	static final int DOCHOSTUIFLAG_THEME = 0x00040000;
 	static final int DOCHOSTUIFLAG_NO3DBORDER  = 0x0000004;
 	static final int DOCHOSTUIFLAG_NO3DOUTERBORDER = 0x00200000;
+	static final int DOCHOSTUIFLAG_ENABLE_REDIRECT_NOTIFICATION = 0x04000000;
 	
 	static final String ABOUT_BLANK = "about:blank"; //$NON-NLS-1$
 	static final String CLSID_SHELLEXPLORER1 = "{EAB22AC3-30C1-11CF-A7EB-0000C05BAE0B}"; //$NON-NLS-1$

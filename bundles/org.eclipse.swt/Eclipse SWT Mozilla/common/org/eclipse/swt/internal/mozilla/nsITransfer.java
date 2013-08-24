@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -39,9 +39,5 @@ public class nsITransfer extends nsIWebProgressListener2 {
 
 	public nsITransfer(long /*int*/ address) {
 		super(address);
-	}
-
-	public int Init(long /*int*/ aSource, long /*int*/ aTarget, long /*int*/ aDisplayName, long /*int*/ aMIMEInfo, long startTime, long /*int*/ aTempFile, long /*int*/ aCancelable) {
-		return XPCOM.VtblCall(nsIWebProgressListener2.LAST_METHOD_ID + 1, getAddress(), aSource, aTarget, aDisplayName, aMIMEInfo, startTime, aTempFile, aCancelable);
 	}
 }

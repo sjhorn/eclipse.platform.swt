@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -39,13 +39,5 @@ public class nsISerializable extends nsISupports {
 
 	public nsISerializable(long /*int*/ address) {
 		super(address);
-	}
-
-	public int Read(long /*int*/ aInputStream) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aInputStream);
-	}
-
-	public int Write(long /*int*/ aOutputStream) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aOutputStream);
 	}
 }

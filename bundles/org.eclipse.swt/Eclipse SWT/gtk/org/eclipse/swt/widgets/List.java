@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -228,21 +228,7 @@ void createHandle (int index) {
 	* shell.
 	*/
 	if ((getShell ().style & SWT.ON_TOP) != 0) {
-		/*
-		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
-		* would prevent the user from being able to type in text to search the tree.
-		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
-		* search. This meant that even if FALSE was passed to enable_search, the user
-		* can still bring up the search pop up using the keybinding. GTK also introduced
-		* the notion of passing a -1 to gtk_set_search_column to disable searching
-		* (including the search key binding).  The fix is to use the right calls
-		* for the right version.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
-			OS.gtk_tree_view_set_search_column (handle, -1);
-		} else {
-			OS.gtk_tree_view_set_enable_search (handle, false);
-		}
+		OS.gtk_tree_view_set_search_column (handle, -1);
 	}
 }
 
@@ -794,20 +780,6 @@ long /*int*/ gtk_button_press_event (long /*int*/ widget, long /*int*/ event) {
 		OS.gtk_widget_grab_focus (handle);
 	}
 	return result;
-}
-
-long /*int*/ gtk_popup_menu (long /*int*/ widget) {
-	long /*int*/ result = super.gtk_popup_menu (widget);
-	/*
-	* Bug in GTK.  The context menu for the typeahead in GtkTreeViewer
-	* opens in the bottom right corner of the screen when Shift+F10
-	* is pressed and the typeahead window was not visible.  The fix is
-	* to prevent the context menu from opening by stopping the default
-	* handler.
-	* 
-	* NOTE: The bug only happens in GTK 2.6.5 and lower.
-	*/
-	return OS.GTK_VERSION < OS.VERSION (2, 6, 5) ? 1 : result;
 }
 
 long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
@@ -1508,23 +1480,6 @@ public void setTopIndex (int index) {
 	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0, 0);
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
-		/*
-		* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
-		* should vertically scroll the cell to the top if use_align is true and row_align is 0.
-		* However, prior to version 2.8 it does not scroll at all.  The fix is to determine
-		* the new location and use gtk_tree_view_scroll_to_point.
-		* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-		* will have no effect. Therefore, it is still neccessary to call 
-		* gtk_tree_view_scroll_to_cell.
-		*/
-		OS.gtk_widget_realize (handle);
-		GdkRectangle cellRect = new GdkRectangle ();
-		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-		int[] tx = new int[1], ty = new int[1];
-		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
-		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
-	}
 	OS.gtk_tree_path_free (path);
 	OS.g_free (iter);
 }

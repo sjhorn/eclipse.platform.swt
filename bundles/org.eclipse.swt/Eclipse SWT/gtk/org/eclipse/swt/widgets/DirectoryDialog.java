@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -128,10 +128,8 @@ String openChooserDialog () {
 		handle = OS.gtk_file_chooser_dialog_new (titleBytes, shellHandle, OS.GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK, OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL, 0);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		long /*int*/ group = OS.gtk_window_get_group(0);
-		OS.gtk_window_group_add_window (group, handle);
-	}
+	long /*int*/ group = OS.gtk_window_get_group(0);
+	OS.gtk_window_group_add_window (group, handle);
 	OS.gtk_window_set_modal (handle, true);
 	long /*int*/ pixbufs = OS.gtk_window_get_icon_list (shellHandle);
 	if (pixbufs != 0) {

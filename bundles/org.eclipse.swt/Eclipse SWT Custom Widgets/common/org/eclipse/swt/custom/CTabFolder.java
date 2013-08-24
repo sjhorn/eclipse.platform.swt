@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -167,10 +167,10 @@ public class CTabFolder extends Composite {
 	Menu showMenu;
 	ToolBar chevronTb;
 	ToolItem chevronItem;
-	Image chevronImage;
 	int chevronCount;
 	boolean chevronVisible = true;
 	
+	Image chevronImage;
 	Control topRight;
 	int topRightAlignment = SWT.RIGHT;
 	boolean ignoreResize;
@@ -562,7 +562,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 	int bodyLeft = -bodyTrim.x;
 	int bodyWidth = size.x - bodyLeft - bodyRight;
 	x = size.x - bodyRight;
-	int y = -bodyTrim.y;
+	int y = onBottom ? this.getSize().y - getTabHeight() + 2*bodyTrim.y : -bodyTrim.y;
 	availableWidth = bodyWidth;
 	int maxHeight = 0;
 	for (int i = 0; i < controls.length; i++) {
@@ -571,7 +571,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 			if (availableWidth > ctrlSize.x) {
 				x -= ctrlSize.x;
 				rects[i].width = ctrlSize.x;
-				rects[i].y = y;
+				rects[i].y = onBottom ? y - ctrlSize.y : y;
 				rects[i].height = ctrlSize.y;
 				rects[i].x = x;
 				availableWidth -= ctrlSize.x;
@@ -587,7 +587,7 @@ Rectangle[] computeControlBounds (Point size, boolean[][] position) {
 				} else {
 					ctrlSize = controls[i].isDisposed() ? new Point(0,0) : controls[i].computeSize(bodyWidth, SWT.DEFAULT);
 					rects[i].width = bodyWidth;
-					rects[i].y = y;
+					rects[i].y = onBottom ? y - ctrlSize.y : y;
 					rects[i].height = ctrlSize.y;
 					rects[i].x = size.x - ctrlSize.x - bodyRight;
 					y += ctrlSize.y;
@@ -3331,7 +3331,7 @@ public void setSingle(boolean single) {
 
 int getControlY(Point size, Rectangle[] rects, int borderBottom, int borderTop, int i) {
 	int center = fixedTabHeight != SWT.DEFAULT ? 0 : (tabHeight - rects[i].height)/2;
-	return onBottom ? size.y - 1 - borderBottom - tabHeight + center : 1 + borderTop + center;
+	return onBottom ? size.y - borderBottom - tabHeight + center : 1 + borderTop + center;
 }
 
 /**
@@ -3725,13 +3725,21 @@ void updateBkImages() {
 				} else {
 					if (control instanceof Composite) ((Composite) control).setBackgroundMode(SWT.INHERIT_DEFAULT);
 					Rectangle bounds = control.getBounds();
-					if (bounds.y > getTabHeight() || gradientColors == null) {
+					int tabHeight = getTabHeight();
+					int height = this.getSize().y;
+					boolean wrapped = onBottom ? bounds.y + bounds.height < height - tabHeight : bounds.y > tabHeight; 
+					if (wrapped || gradientColors == null) {
 						control.setBackgroundImage(null);
 						control.setBackground(getBackground());
 					} else {
 						bounds.width = 10;
-						bounds.y = -bounds.y;
-						bounds.height -= 2*bounds.y - 1;
+						if (!onBottom) {
+							bounds.y = -bounds.y;
+							bounds.height -= 2*bounds.y - 1;
+						} else {
+							bounds.height += height - (bounds.y + bounds.height);
+							bounds.y = -1; 
+						}
 						bounds.x = 0;
 						if (controlBkImages[i] != null) controlBkImages[i].dispose();
 						controlBkImages[i] = new Image(control.getDisplay(), bounds);

@@ -24,7 +24,7 @@ import org.eclipse.swt.internal.win32.*;
  * platforms, and should never be called from application code.
  * </p>
  * @see <a href="http://www.eclipse.org/swt/">Sample code and further information</a>
- * @noinstantiate This class is not intended to be instantiated by clients.
+ * @noreference This class is not intended to be referenced by clients
  */
 
 public final class GCData {
@@ -45,14 +45,8 @@ public final class GCData {
 	public int alpha = 0xFF;
 
 	public Image image;
-	/**
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
 	public PAINTSTRUCT ps;
 	public int layout = -1;
-	/**
-	 * @noreference This field is not intended to be referenced by clients.
-	 */
 	public long /*int*/ hPen, hOldPen, hBrush, hOldBrush, hNullBitmap,
 		hwnd, gdipGraphics, gdipPen, gdipBrush, gdipFgBrush, gdipBgBrush,
 		gdipFont, hGDIFont;

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1227,17 +1227,21 @@ public ImageData getImageData() {
  *
  * @param device the device on which to allocate the color
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
- * @param pixmap the OS handle for the image
+ * @param imageHandle the OS handle for the image
  * @param mask the OS handle for the image mask
  *
  * @noreference This method is not intended to be referenced by clients.
  */
-public static Image gtk_new(Device device, int type, long /*int*/ pixmap, long /*int*/ mask) {
+public static Image gtk_new(Device device, int type, long /*int*/ imageHandle, long /*int*/ mask) {
 	Image image = new Image(device);
 	image.type = type;
-	image.pixmap = pixmap;
+	if (OS.GTK3) {
+		image.surface = imageHandle;
+	} else {
+		image.pixmap = imageHandle;
+		if (OS.USE_CAIRO) image.createSurface();
+	}
 	image.mask = mask;
-	if (OS.USE_CAIRO) image.createSurface();
 	return image;
 }
 

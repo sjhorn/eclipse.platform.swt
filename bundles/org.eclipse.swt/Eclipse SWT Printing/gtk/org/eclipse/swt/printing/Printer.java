@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -91,7 +91,7 @@ static void gtk_init() {
  */
 public static PrinterData[] getPrinterList() {
 	printerList = new PrinterData [0];
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
+	if (disablePrinting) {
 		return printerList;
 	}
 	gtk_init();
@@ -139,7 +139,7 @@ static long /*int*/ GtkPrinterFunc_List (long /*int*/ printer, long /*int*/ user
  */
 public static PrinterData getDefaultPrinterData() {
 	findData = null;
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) {
+	if (disablePrinting) {
 		return null;
 	}
 	gtk_init();
@@ -468,15 +468,6 @@ public void internal_dispose_GC(long /*int*/ hDC, GCData data) {
 	}
 }
 
-/**	 
- * Releases any internal state prior to destroying this printer.
- * This method is called internally by the dispose
- * mechanism of the <code>Device</code> class.
- */
-protected void release () {
-	super.release();
-}
-
 /**
  * Starts a print job and returns true if the job started successfully
  * and false otherwise.
@@ -748,7 +739,7 @@ public Rectangle computeTrim(int x, int y, int width, int height) {
  */
 protected void create(DeviceData deviceData) {
 	this.data = (PrinterData)deviceData;
-	if (OS.GTK_VERSION < OS.VERSION (2, 10, 0) || disablePrinting) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (disablePrinting) SWT.error(SWT.ERROR_NO_HANDLES);
 	printer = gtkPrinterFromPrinterData(data);
 	if (printer == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }

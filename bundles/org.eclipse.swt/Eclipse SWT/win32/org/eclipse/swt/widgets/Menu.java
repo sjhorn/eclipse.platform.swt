@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1196,7 +1196,7 @@ void releaseParent () {
 void releaseWidget () {
 	super.releaseWidget ();
 	backgroundImage = null;
-	if (hBrush == 0) OS.DeleteObject (hBrush);
+	if (hBrush != 0) OS.DeleteObject (hBrush);
 	hBrush = 0;
 	if (OS.IsPPC && hwndCB != 0) {
 		if (imageList != null) {
@@ -1613,7 +1613,7 @@ void update () {
 }
 
 void updateBackground () {
-	if (hBrush == 0) OS.DeleteObject (hBrush);
+	if (hBrush != 0) OS.DeleteObject (hBrush);
 	hBrush = 0;
 	if (backgroundImage != null) {
 		hBrush = OS.CreatePatternBrush (backgroundImage.handle);

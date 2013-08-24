@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -543,9 +543,6 @@ void bringToTop (boolean force) {
 	*/
 	boolean xFocus = false;
 	if (activeShell != null) {
-		if (OS.GTK_VERSION < OS.VERSION (2, 6, 8)) {
-			xFocus = activeShell.isUndecorated ();
-		}
 		display.activeShell = null;
 		display.activePending = true;
 	}
@@ -2357,7 +2354,7 @@ void updateModal () {
 		*/
 		if (group == 0 && topModalShell != null) group = topModalShell.getShell ().group;
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0) && group == 0) { 
+	if (group == 0) { 
 		/*
 		* Feature in GTK. Starting with GTK version 2.10, GTK
 		* doesn't assign windows to a default group. The fix is to
@@ -2579,7 +2576,7 @@ void setToolTipText (long /*int*/ rootWidget, long /*int*/ tipWidget, String str
 			tooltipsHandle = OS.gtk_tooltips_new ();
 			if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (tooltipsHandle);
-			g_object_ref_sink (tooltipsHandle);
+			OS.g_object_ref_sink (tooltipsHandle);
 		}
 	
 		/*

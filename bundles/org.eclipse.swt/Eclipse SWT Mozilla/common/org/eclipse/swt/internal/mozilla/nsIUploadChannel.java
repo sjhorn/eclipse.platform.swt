@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2011, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -39,10 +39,6 @@ public class nsIUploadChannel extends nsISupports {
 
 	public nsIUploadChannel(long /*int*/ address) {
 		super(address);
-	}
-
-	public int SetUploadStream(long /*int*/ aStream, long /*int*/ aContentType, int aContentLength) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aStream, aContentType, aContentLength);
 	}
 
 	public int GetUploadStream(long /*int*/[] aUploadStream) {

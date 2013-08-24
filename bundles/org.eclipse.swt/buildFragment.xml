@@ -48,6 +48,7 @@
 		<condition property="p2.publish.parts" value="true">
 			<istrue value="${p2.gathering}" />
 		</condition>
+		<mkdir dir="target"/>
 	</target>
 
 	<target name="properties" if="eclipse.running">
@@ -79,7 +80,6 @@
 		</javac>
 		<copy todir="${temp.folder}/@dot.bin">
 			<fileset dir="${temp.folder}/@dot.src/" excludes="**/*.java,**/package.htm*,**/library/" />
-			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<mkdir dir="${build.result.folder}/@dot" />
 		<copy todir="${build.result.folder}/@dot" failonerror="true">
@@ -163,6 +163,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/carbon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/carbon/"/>
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -194,13 +195,14 @@
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT OpenGL/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/common/"/>
-			<fileset dir="${plugindir}/Eclipse SWT PI/cocoa/" excludes="**/*.extras"/>
+			<fileset dir="${plugindir}/Eclipse SWT PI/cocoa/" excludes="**/*.extras,**/*.bridgesupport"/>
 			<fileset dir="${plugindir}/Eclipse SWT PI/common_j2se/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Printing/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/cocoa/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -243,6 +245,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/gtk/"/>
 			<fileset dir="${plugindir}/Eclipse SWT WebKit/gtk/"/>
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -292,6 +295,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/gnome/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/motif/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -331,6 +335,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/photon/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -366,6 +371,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/common/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Program/win32/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/win32/"/>
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -404,6 +410,7 @@
 			<fileset dir="${plugindir}/Eclipse SWT Program/wpf/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Theme/emulated/"/>
 			<fileset dir="${plugindir}/Eclipse SWT Effects/emulated/"/>
+			<fileset dir="${plugindir}/components/" excludes="**/*.idl" />
 		</copy>
 		<antcall target="copy.translationfiles"/>
 		<antcall target="replace64"/>
@@ -501,16 +508,17 @@
 			<param name="jar.filename" value="swt-debug.jar" />
 		</antcall>
 		<jar jarfile="${build.result.folder}/swt-debug.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
-		<copy file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
+		<move file="${build.result.folder}/swt-debug.jar" todir="${temp.folder}/swtdownload" />
 		<delete dir="${build.result.folder}/@dot" />
 		<antcall target="build.jars">
 			<param name="debug" value="false" />
 			<param name="jar.filename" value="swt.jar" />
 		</antcall>
 		<jar jarfile="${build.result.folder}/swt.jar" basedir="${fragmentdir}" update="true" includes="swt*.dll,libswt*.so,libswt*.sl,libswt*.a,libswt*.jnilib,libXm.so.2" />
-		<copy file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
+		<move file="${build.result.folder}/swt.jar" todir="${temp.folder}/swtdownload" />
+		<delete dir="${build.result.folder}/@dot" />
 		<antcall target="build.sources" />
-		<copy file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
+		<move file="${build.result.folder}/src.zip" todir="${temp.folder}/swtdownload" />
 		<copy file="${plugindir}/build/.project" todir="${temp.folder}/swtdownload" />
 		<copy file="${plugindir}/build/.classpath" todir="${temp.folder}/swtdownload" />
 		<copy todir="${temp.folder}/swtdownload">
@@ -522,6 +530,7 @@
 		<zip zipfile="${destination}/${zipfilename}">
 			<zipfileset dir="${temp.folder}/swtdownload/" />
 		</zip>
+		<copy file="${zipfilename}" todir="target" />
 		<delete dir="${temp.folder}" />
 	</target>
 

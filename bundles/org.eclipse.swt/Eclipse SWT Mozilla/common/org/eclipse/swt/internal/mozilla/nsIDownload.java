@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2004, 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2004, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -39,57 +39,5 @@ public class nsIDownload extends nsISupports {
 
 	public nsIDownload(long /*int*/ address) {
 		super(address);
-	}
-
-	public int Init(long /*int*/ aSource, long /*int*/ aTarget, char[] aDisplayName, long /*int*/ aMIMEInfo, long startTime, long /*int*/ aPersist) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aSource, aTarget, aDisplayName, aMIMEInfo, startTime, aPersist);
-	}
-
-	public int GetSource(long /*int*/[] aSource) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aSource);
-	}
-
-	public int GetTarget(long /*int*/[] aTarget) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aTarget);
-	}
-
-	public int GetPersist(long /*int*/[] aPersist) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aPersist);
-	}
-
-	public int GetPercentComplete(int[] aPercentComplete) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aPercentComplete);
-	}
-
-	public int GetDisplayName(long /*int*/[] aDisplayName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aDisplayName);
-	}
-
-	public int SetDisplayName(char[] aDisplayName) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aDisplayName);
-	}
-
-	public int GetStartTime(long[] aStartTime) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aStartTime);
-	}
-
-	public int GetMIMEInfo(long /*int*/[] aMIMEInfo) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aMIMEInfo);
-	}
-
-	public int GetListener(long /*int*/[] aListener) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aListener);
-	}
-
-	public int SetListener(long /*int*/ aListener) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 11, getAddress(), aListener);
-	}
-
-	public int GetObserver(long /*int*/[] aObserver) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 12, getAddress(), aObserver);
-	}
-
-	public int SetObserver(long /*int*/ aObserver) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 13, getAddress(), aObserver);
 	}
 }

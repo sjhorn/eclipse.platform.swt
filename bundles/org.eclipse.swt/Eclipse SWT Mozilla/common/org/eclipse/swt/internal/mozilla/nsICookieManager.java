@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -39,10 +39,6 @@ public class nsICookieManager extends nsISupports {
 
 	public nsICookieManager(long /*int*/ address) {
 		super(address);
-	}
-
-	public int RemoveAll() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress());
 	}
 
 	public int GetEnumerator(long /*int*/[] aEnumerator) {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2010, 2012 IBM Corporation and others.
+ * Copyright (c) 2010, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -505,6 +505,19 @@ public void create (Composite parent, int style) {
 		bytes = Converter.wcsToMbcs (null, "POST", true); //$NON-NLS-1$
 		PostString = C.malloc (bytes.length);
 		C.memmove (PostString, bytes, bytes.length);
+
+		/*
+		* WebKitGTK version 1.8.x and newer can crash sporadically in
+		* webkitWebViewRegisterForIconNotification().  The root issue appears
+		* to be WebKitGTK accessing its icon database from a background
+		* thread.  Work around this crash by disabling the use of WebKitGTK's
+		* icon database, which should not affect the Browser in any way.
+		*/
+		long /*int*/ database = WebKitGTK.webkit_get_favicon_database ();
+		if (database != 0) {
+			/* WebKitGTK version is >= 1.8.x */
+			WebKitGTK.webkit_favicon_database_set_path (database, 0);
+		}
 	}
 
 	scrolledWindow = OS.gtk_scrolled_window_new (0, 0);
@@ -597,9 +610,13 @@ public void create (Composite parent, int style) {
 	*/
 	long /*int*/ session = WebKitGTK.webkit_get_default_session ();
 	long /*int*/ originalAuth = WebKitGTK.soup_session_get_feature (session, WebKitGTK.webkit_soup_auth_dialog_get_type ());
-	WebKitGTK.soup_session_feature_detach (originalAuth, session);
+	if (originalAuth != 0) {
+		WebKitGTK.soup_session_feature_detach (originalAuth, session);
+	}
 	OS.g_signal_connect (session, WebKitGTK.authenticate, Proc5.getAddress (), webView);
-	WebKitGTK.soup_session_feature_attach (originalAuth, session);
+	if (originalAuth != 0) {
+		WebKitGTK.soup_session_feature_attach (originalAuth, session);
+	}
 
 	/*
 	* Check for proxy values set as documented java properties and update the
@@ -646,18 +663,20 @@ public void create (Composite parent, int style) {
 	browser.setData (KEY_CHECK_SUBWINDOW, Boolean.FALSE);
 
 	/*
-	 * Bug in WebKitGTK.  In WebKitGTK releases >= 1.10 a crash can occur if an
-	 * attempt is made to show a browser before a size has been set on it.  The
-	 * workaround is to temporarily give it a size in order to force the native
-	 * resize events to fire. 
+	 * Bug in WebKitGTK.  In WebKitGTK 1.10.x a crash can occur if an
+	 * attempt is made to show a browser before a size has been set on
+	 * it.  The workaround is to temporarily give it a size that forces
+	 * the native resize events to fire.
 	 */
+	int major = WebKitGTK.webkit_major_version ();
 	int minor = WebKitGTK.webkit_minor_version ();
-	if (minor >= 10) {
-		Point size = browser.getSize();
-		size.x += 2; size.y += 2;
-		browser.setSize(size);
-		size.x -= 2; size.y -= 2;
-		browser.setSize(size);
+	if (major == 1 && minor >= 10) {
+		Rectangle minSize = browser.computeTrim (0, 0, 2, 2);
+		Point size = browser.getSize ();
+		size.x += minSize.width; size.y += minSize.height;
+		browser.setSize (size);
+		size.x -= minSize.width; size.y -= minSize.height;
+		browser.setSize (size);
 	}
 }
 
@@ -927,13 +946,25 @@ boolean handleDOMEvent (long /*int*/ event, int type) {
 	}
 
 	/* key event */
+	int keyEventState = 0;
+	long /*int*/ eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_KEY_PRESS:
+			case OS.GDK_KEY_RELEASE:
+				keyEventState = gdkEvent.state;
+				break;
+		}
+		OS.gdk_event_free (eventPtr);
+	}
 	int keyCode = (int)WebKitGTK.webkit_dom_ui_event_get_key_code (event);
 	int charCode = (int)WebKitGTK.webkit_dom_ui_event_get_char_code (event);
-	boolean altKey = WebKitGTK.webkit_dom_mouse_event_get_alt_key (event) != 0;
-	boolean ctrlKey = WebKitGTK.webkit_dom_mouse_event_get_ctrl_key (event) != 0;
-	boolean shiftKey = WebKitGTK.webkit_dom_mouse_event_get_shift_key (event) != 0;
-	boolean metaKey = WebKitGTK.webkit_dom_mouse_event_get_meta_key (event) != 0;
-	return handleKeyEvent(typeString, keyCode, charCode, altKey, ctrlKey, shiftKey, metaKey);
+	boolean altKey = (keyEventState & OS.GDK_MOD1_MASK) != 0;
+	boolean ctrlKey = (keyEventState & OS.GDK_CONTROL_MASK) != 0;
+	boolean shiftKey = (keyEventState & OS.GDK_SHIFT_MASK) != 0;
+	return handleKeyEvent(typeString, keyCode, charCode, altKey, ctrlKey, shiftKey, false);
 }
 
 boolean handleEventFromFunction (Object[] arguments) {
@@ -987,7 +1018,7 @@ boolean handleEventFromFunction (Object[] arguments) {
 		((Double)arguments[1]).intValue (),
 		((Double)arguments[2]).intValue (),
 		((Double)arguments[3]).intValue (),
-		((Double)arguments[4]).intValue () + 1,
+		(arguments[4] != null ? ((Double)arguments[4]).intValue () : 0) + 1,
 		((Boolean)arguments[5]).booleanValue (),
 		((Boolean)arguments[6]).booleanValue (),
 		((Boolean)arguments[7]).booleanValue (),

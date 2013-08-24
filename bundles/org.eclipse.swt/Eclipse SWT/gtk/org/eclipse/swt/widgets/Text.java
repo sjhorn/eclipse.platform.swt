@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -524,10 +524,8 @@ public void clearSelection () {
 	} else {
 		byte [] position = new byte [ITER_SIZEOF];
 		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
 		OS.gtk_text_buffer_get_iter_at_mark (bufferHandle, position, insertMark);
-		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, position);
-		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, position);
+		OS.gtk_text_buffer_select_range(bufferHandle, position, position);
 	}
 }
 
@@ -1263,6 +1261,11 @@ public String getText (int start, int end) {
  * <p>
  * The text for a text widget is the characters in the widget, or
  * a zero-length array if this has never been set.
+ * </p>
+ * <p>
+ * Note: Use the API to protect the text, for example, when widget is used as
+ * a password field. However, the text can't be protected if Segment listener
+ * is added to the widget.
  * </p>
  *
  * @return a character array that contains the widget's text
@@ -2074,10 +2077,7 @@ public void selectAll () {
 		byte [] end =  new byte [ITER_SIZEOF];
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, start, 0);
 		OS.gtk_text_buffer_get_end_iter (bufferHandle, end);
-		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
-		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, start);
-		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, end);
+		OS.gtk_text_buffer_select_range(bufferHandle, start, end);
 	}
 }
 
@@ -2328,10 +2328,7 @@ public void setSelection (int start, int end) {
 		OS.g_free (ptr);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, startIter, start);
 		OS.gtk_text_buffer_get_iter_at_offset (bufferHandle, endIter, end);
-		long /*int*/ insertMark = OS.gtk_text_buffer_get_insert (bufferHandle);
-		long /*int*/ selectionMark = OS.gtk_text_buffer_get_selection_bound (bufferHandle);
-		OS.gtk_text_buffer_move_mark (bufferHandle, selectionMark, startIter);
-		OS.gtk_text_buffer_move_mark (bufferHandle, insertMark, endIter);
+		OS.gtk_text_buffer_select_range(bufferHandle, startIter, endIter);
 	}
 }
 
@@ -2437,7 +2434,12 @@ public void setText (String string) {
  * Sets the contents of the receiver to the characters in the array. If the receiver
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
- *
+ * <p>
+ * Note: Use the API to protect the text, for example, when widget is used as
+ * a password field. However, the text can't be protected if Verify or
+ * Segment listener is added to the widget.
+ * </p>
+ * 
  * @param text a character array that contains the new text
  *
  * @exception IllegalArgumentException <ul>

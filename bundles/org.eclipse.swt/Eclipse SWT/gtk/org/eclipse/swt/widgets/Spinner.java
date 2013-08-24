@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -901,10 +901,6 @@ void setCursor (long /*int*/ cursor) {
 	if (cursor == 0) defaultCursor = OS.gdk_cursor_new (OS.GDK_XTERM);
 	super.setCursor (cursor != 0 ? cursor : defaultCursor);
 	if (cursor == 0) gdk_cursor_unref (defaultCursor);
-}
-
-void setFontDescription (long /*int*/ font) {
-	super.setFontDescription (font);
 }
 
 void setForegroundColor (GdkColor color) {

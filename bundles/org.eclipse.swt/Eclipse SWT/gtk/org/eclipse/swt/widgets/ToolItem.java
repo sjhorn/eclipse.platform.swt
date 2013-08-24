@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -608,7 +608,7 @@ long /*int*/ gtk_enter_notify_event (long /*int*/ widget, long /*int*/ event) {
 			int index = imageList.indexOf (hotImage);
 			if (index != -1 && imageHandle != 0) {
 				long /*int*/ pixbuf = imageList.getPixbuf (index);
-				OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+				gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 			}
 		}
 	}
@@ -652,7 +652,7 @@ long /*int*/ gtk_leave_notify_event (long /*int*/ widget, long /*int*/ event) {
 				int index = imageList.indexOf (image);
 				if (index != -1 && imageHandle != 0) {
 					long /*int*/ pixbuf = imageList.getPixbuf (index);
-					OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+					gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 				}
 			}
 		}	
@@ -998,9 +998,9 @@ public void setImage (Image image) {
 			imageList.put (imageIndex, image);
 		}
 		long /*int*/ pixbuf = imageList.getPixbuf (imageIndex);
-		OS.gtk_image_set_from_pixbuf(imageHandle, pixbuf);
+		gtk_image_set_from_pixbuf(imageHandle, pixbuf);
 	} else {
-		OS.gtk_image_set_from_pixbuf(imageHandle, 0);
+		gtk_image_set_from_pixbuf(imageHandle, 0);
 	}
 	/*
 	* If Text/Image of a tool-item changes, then it is 

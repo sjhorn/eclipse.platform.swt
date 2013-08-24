@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2012 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2013 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -126,6 +126,8 @@
 #define gtk_combo_box_text_insert_LIB LIB_GTK
 #define gtk_combo_box_insert_text_LIB LIB_GTK
 #define gtk_combo_box_remove_text_LIB LIB_GTK
+#define gtk_combo_box_text_remove_LIB LIB_GTK
+#define gtk_combo_box_text_remove_all_LIB LIB_GTK
 #define gtk_combo_box_get_active_LIB LIB_GTK
 #define gtk_combo_box_get_model_LIB LIB_GTK
 #define gtk_combo_box_set_active_LIB LIB_GTK
@@ -175,6 +177,7 @@
 #define gtk_icon_info_free_LIB LIB_GTK
 #define gtk_icon_set_render_icon_LIB LIB_GTK
 #define gtk_icon_theme_lookup_by_gicon_LIB LIB_GTK
+#define gtk_image_set_from_gicon_LIB LIB_GTK
 #define gdk_keyboard_ungrab_LIB LIB_GDK
 #define gtk_icon_theme_get_default_LIB LIB_GTK
 #define gtk_menu_item_remove_submenu_LIB LIB_GTK
@@ -276,7 +279,6 @@
 #define gdk_screen_get_monitor_at_window_LIB LIB_GDK
 #define gdk_screen_get_monitor_geometry_LIB LIB_GDK
 #define gdk_screen_get_n_monitors_LIB LIB_GDK
-#define gdk_screen_get_number_LIB LIB_GDK
 #define gdk_pixbuf_render_to_drawable_LIB LIB_GDK
 #define gdk_visual_get_depth_LIB LIB_GDK
 #define gtk_scrolled_window_get_hscrollbar_LIB LIB_GTK
@@ -290,6 +292,7 @@
 #define gtk_style_render_icon_LIB LIB_GTK
 #define gtk_hscale_new_LIB LIB_GTK
 #define gtk_vscale_new_LIB LIB_GTK
+#define gtk_scrolled_window_add_with_viewport_LIB LIB_GTK
 #define gtk_selection_data_get_data_LIB LIB_GTK
 #define gtk_selection_data_get_data_type_LIB LIB_GTK
 #define gtk_selection_data_get_format_LIB LIB_GTK
@@ -388,7 +391,6 @@
 #define gdk_colormap_alloc_color_LIB LIB_GDK
 #define gdk_colormap_free_colors_LIB LIB_GDK
 #define gtk_enumerate_printers_LIB LIB_GTK
-#define gtk_object_sink_LIB LIB_GTK
 #define gtk_orientable_set_orientation_LIB LIB_GTK
 #define gtk_paint_arrow_LIB LIB_GTK
 #define gtk_paint_box_LIB LIB_GTK
@@ -522,7 +524,6 @@
 #define g_icon_to_string_LIB LIB_GIO
 #define g_icon_new_for_string_LIB LIB_GIO
 #define g_file_query_info_LIB LIB_GIO
-#define g_object_ref_sink_LIB LIB_GOBJECT
 
 // GTK3 only
 #define gtk_widget_draw_LIB LIB_GTK
@@ -551,6 +552,7 @@
 #define gtk_css_provider_load_from_data_LIB LIB_GTK
 #define gtk_css_provider_new_LIB LIB_GTK
 #define gtk_icon_set_render_icon_pixbuf_LIB LIB_GTK
+#define gtk_drag_set_icon_surface_LIB LIB_GTK
 
 #ifndef g_thread_supported
 #define g_thread_supported() 0
@@ -579,17 +581,7 @@
 #else
 #define GTK_RANGE_SLIDER_END(arg0) (arg0)->slider_end
 #endif
-#if GTK_CHECK_VERSION(2,8,0)
-#define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) 0
-#else
-#define GTK_SCROLLED_WINDOW_HSCROLLBAR(arg0) (arg0)->hscrollbar
-#endif
-#define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)		
-#if GTK_CHECK_VERSION(2,8,0)
-#define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) 0
-#else
-#define GTK_SCROLLED_WINDOW_VSCROLLBAR(arg0) (arg0)->vscrollbar
-#endif
+#define GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(arg0) (GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing >= 0 ? GTK_SCROLLED_WINDOW_GET_CLASS (arg0)->scrollbar_spacing : 3)
 #ifndef GTK_WIDGET_HAS_DEFAULT
 #define GTK_WIDGET_HAS_DEFAULT(arg0) 0
 #endif

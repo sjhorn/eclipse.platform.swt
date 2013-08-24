@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -46,16 +46,8 @@ public class nsIAuthInformation extends nsISupports {
 	public static final int NEED_DOMAIN = 4;
 	public static final int ONLY_PASSWORD = 8;
 
-	public int GetFlags(int[] aFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aFlags);
-	}
-
 	public int GetRealm(long /*int*/ aRealm) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aRealm);
-	}
-
-	public int GetAuthenticationScheme(long /*int*/ aAuthenticationScheme) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aAuthenticationScheme);
 	}
 
 	public int GetUsername(long /*int*/ aUsername) {
@@ -72,13 +64,5 @@ public class nsIAuthInformation extends nsISupports {
 
 	public int SetPassword(long /*int*/ aPassword) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aPassword);
-	}
-
-	public int GetDomain(long /*int*/ aDomain) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aDomain);
-	}
-
-	public int SetDomain(long /*int*/ aDomain) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aDomain);
 	}
 }

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2003, 2012 IBM Corporation and others.
+ * Copyright (c) 2003, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -30,6 +30,7 @@ class AppFileLocProvider {
 	static final String HISTORY_FILE = "history.dat"; //$NON-NLS-1$
 	static final String LOCALSTORE_FILE = "localstore.rdf"; //$NON-NLS-1$
 	static final String MIMETYPES_FILE = "mimeTypes.rdf"; //$NON-NLS-1$
+	static final String MOZILLA_PLUGIN_PATH = "MOZ_PLUGIN_PATH"; //$NON-NLS-1$
 	static final String PLUGINS_DIR = "plugins"; //$NON-NLS-1$
 	static final String USER_PLUGINS_DIR = ".mozilla" + SEPARATOR_OS + "plugins"; //$NON-NLS-1$ //$NON-NLS-2$
 	static final String PREFERENCES_FILE = "prefs.js"; //$NON-NLS-1$
@@ -120,12 +121,12 @@ int QueryInterface (long /*int*/ riid, long /*int*/ ppvObject) {
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIDirectoryServiceProvider.NS_IDIRECTORYSERVICEPROVIDER_IID)) {
+	if (guid.Equals (XPCOM.NS_IDIRECTORYSERVICEPROVIDER_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {directoryServiceProvider.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
 	}
-	if (guid.Equals (nsIDirectoryServiceProvider2.NS_IDIRECTORYSERVICEPROVIDER2_IID)) {
+	if (guid.Equals (XPCOM.NS_IDIRECTORYSERVICEPROVIDER2_IID)) {
 		XPCOM.memmove (ppvObject, new long /*int*/[] {directoryServiceProvider2.getAddress ()}, C.PTR_SIZEOF);
 		AddRef ();
 		return XPCOM.NS_OK;
@@ -154,7 +155,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 		if (pluginDirs == null) {
 			int index = 0;
 			/* set the first value(s) to the MOZ_PLUGIN_PATH environment variable value if it's defined */
-			long /*int*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, XPCOM.MOZILLA_PLUGIN_PATH, true));
+			long /*int*/ ptr = C.getenv (MozillaDelegate.wcsToMbcs (null, MOZILLA_PLUGIN_PATH, true));
 			if (ptr != 0) {
 				int length = C.strlen (ptr);
 				byte[] buffer = new byte[length];
@@ -220,7 +221,7 @@ int getFiles (long /*int*/ prop, long /*int*/ _retval) {
 
 				nsILocalFile localFile = new nsILocalFile (result[0]);
 				result[0] = 0;
-				rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+				rc = localFile.QueryInterface (Mozilla.IsPre_17 ? nsIFile.NS_IFILE_IID : nsIFile.NS_IFILE_17_IID, result);
 				if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 				if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 				localFile.Release ();
@@ -315,7 +316,7 @@ int getFile(long /*int*/ prop, long /*int*/ persistent, long /*int*/ _retval) {
 		
 		nsILocalFile localFile = new nsILocalFile (result [0]);
 		result[0] = 0;
-	    rc = localFile.QueryInterface (nsIFile.NS_IFILE_IID, result); 
+	    rc = localFile.QueryInterface (Mozilla.IsPre_17 ? nsIFile.NS_IFILE_IID : nsIFile.NS_IFILE_17_IID, result); 
 		if (rc != XPCOM.NS_OK) Mozilla.error (rc);
 		if (result[0] == 0) Mozilla.error (XPCOM.NS_ERROR_NO_INTERFACE);
 

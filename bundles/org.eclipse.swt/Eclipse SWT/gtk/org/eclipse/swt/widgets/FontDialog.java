@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2012 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -165,10 +165,8 @@ public FontData open () {
 			OS.g_list_free (pixbufs);
 		}
 	}
-	if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-		long /*int*/ group = OS.gtk_window_get_group(0);
-		OS.gtk_window_group_add_window (group, handle);
-	}
+	long /*int*/ group = OS.gtk_window_get_group(0);
+	OS.gtk_window_group_add_window (group, handle);
 	OS.gtk_window_set_modal (handle, true);
 	if (fontData != null) {
 		Font font = new Font (display, fontData);

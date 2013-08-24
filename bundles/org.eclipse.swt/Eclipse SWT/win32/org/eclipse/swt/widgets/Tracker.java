@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -49,6 +49,7 @@ public class Tracker extends Widget {
 	Cursor clientCursor;
 	int cursorOrientation = SWT.NONE;
 	boolean inEvent = false;
+	boolean drawn;
 	long /*int*/ hwndTransparent, hwndOpaque, oldTransparentProc, oldOpaqueProc;
 	int oldX, oldY;
 	
@@ -489,7 +490,7 @@ public boolean open () {
 	if (IsVista && parent == null) {
 		Rectangle bounds = display.getBounds();
 		hwndTransparent = OS.CreateWindowEx (
-			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE | OS.WS_EX_TOOLWINDOW,
 			display.windowClass,
 			null,
 			OS.WS_POPUP,
@@ -501,7 +502,7 @@ public boolean open () {
 			null);
 		OS.SetLayeredWindowAttributes (hwndTransparent, 0, (byte)0x01, OS.LWA_ALPHA);
 		hwndOpaque = OS.CreateWindowEx (
-			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE,
+			OS.WS_EX_LAYERED | OS.WS_EX_NOACTIVATE | OS.WS_EX_TOOLWINDOW,
 			display.windowClass,
 			null,
 			OS.WS_POPUP,
@@ -511,7 +512,8 @@ public boolean open () {
 			0,
 			OS.GetModuleHandle (null),
 			null);
-		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);		
+		OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+		drawn = false;
 		newProc = new Callback (this, "transparentProc", 4); //$NON-NLS-1$
 		long /*int*/ newProcAddress = newProc.getAddress ();
 		if (newProcAddress == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -936,6 +938,10 @@ long /*int*/ transparentProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ 
 					OS.DeleteObject (hBitmap);
 				}
 				OS.EndPaint (hwnd, ps);
+				if (!drawn) {
+					OS.SetLayeredWindowAttributes (hwndOpaque, 0xFFFFFF, (byte)0xFF, OS.LWA_COLORKEY | OS.LWA_ALPHA);
+					drawn = true;
+				}
 				return 0;
 			}
 	}

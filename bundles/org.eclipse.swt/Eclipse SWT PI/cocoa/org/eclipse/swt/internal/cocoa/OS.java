@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2012 IBM Corporation and others.
+ * Copyright (c) 2007, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1438,6 +1438,7 @@ public static final long /*int*/ sel_invalidate = sel_registerName("invalidate")
 public static final long /*int*/ sel_invalidateShadow = sel_registerName("invalidateShadow");
 public static final long /*int*/ sel_invert = sel_registerName("invert");
 public static final long /*int*/ sel_isActive = sel_registerName("isActive");
+public static final long /*int*/ sel_isDescendantOf_ = sel_registerName("isDescendantOf:");
 public static final long /*int*/ sel_isDocumentEdited = sel_registerName("isDocumentEdited");
 public static final long /*int*/ sel_isDrawingToScreen = sel_registerName("isDrawingToScreen");
 public static final long /*int*/ sel_isEmpty = sel_registerName("isEmpty");

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1360,7 +1360,12 @@ public String getText () {
  * The text for a text widget is the characters in the widget, or
  * a zero-length array if this has never been set.
  * </p>
- *
+ * <p>
+ * Note: Use the API to protect the text, for example, when widget is used as
+ * a password field. However, the text can't be protected if Segment listener
+ * is added to the widget.
+ * </p>
+ * 
  * @return a character array that contains the widget's text
  *
  * @exception SWTException <ul>
@@ -1381,6 +1386,7 @@ public char[] getTextChars () {
 	if (segments != null) buffer = deprocessText (buffer, 0, -1, false);
 	char [] chars = new char [length];
 	System.arraycopy (buffer.chars, 0, chars, 0, length);
+	for (int i = 0; i < buffer.chars.length; i++) buffer.chars [i] = '\0';
 	return chars;
 }
 
@@ -2263,6 +2269,11 @@ public void setText (String string) {
  * Sets the contents of the receiver to the characters in the array. If the receiver
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
+ * <p>
+ * Note: Use the API to protect the text, for example, when the widget is used as
+ * a password field. However, the text can't be protected if Verify or
+ * Segment listener is added to the widget.
+ * </p>
  *
  * @param text a character array that contains the new text
  *

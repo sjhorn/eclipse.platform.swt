@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -432,7 +432,7 @@ public class Display extends Device {
 	static final int GTK3_MINOR = 0;
 	static final int GTK3_MICRO = 0;
 	static final int GTK2_MAJOR = 2;
-	static final int GTK2_MINOR = 6;
+	static final int GTK2_MINOR = 10;
 	static final int GTK2_MICRO = 0;
 
 	/* Display Data */
@@ -1529,19 +1529,17 @@ public Control getCursorControl () {
 
 static GtkBorder getEntryInnerBorder (long /*int*/ handle) {
     GtkBorder gtkBorder = new GtkBorder();
-    if (OS.GTK_VERSION >= OS.VERSION (2, 10, 0)) {
-	    long /*int*/ border = OS.gtk_entry_get_inner_border (handle);
-	    if (border != 0) {
-	    	OS.memmove (gtkBorder, border, GtkBorder.sizeof);
-	    	return gtkBorder;
-	    }
-	    long /*int*/ []  borderPtr = new long /*int*/ [1];
-	    OS.gtk_widget_style_get (handle, OS.inner_border, borderPtr,0);
-	    if (borderPtr[0] != 0) {
-	        OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
-	        OS.gtk_border_free(borderPtr[0]);
-	        return gtkBorder;
-	    }
+    long /*int*/ border = OS.gtk_entry_get_inner_border (handle);
+    if (border != 0) {
+    	OS.memmove (gtkBorder, border, GtkBorder.sizeof);
+    	return gtkBorder;
+    }
+    long /*int*/ []  borderPtr = new long /*int*/ [1];
+    OS.gtk_widget_style_get (handle, OS.inner_border, borderPtr,0);
+    if (borderPtr[0] != 0) {
+        OS.memmove (gtkBorder, borderPtr[0], GtkBorder.sizeof);
+        OS.gtk_border_free(borderPtr[0]);
+        return gtkBorder;
     }
     gtkBorder.left = INNER_BORDER;
     gtkBorder.top = INNER_BORDER;

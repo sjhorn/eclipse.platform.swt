@@ -255,7 +255,7 @@ long /*int*/ cellDataProc (long /*int*/ tree_column, long /*int*/ cell, long /*i
 		if (isPixbuf) {
 			ptr [0] = 0;
 			OS.gtk_tree_model_get (tree_model, iter, modelIndex + CELL_PIXBUF, ptr, -1);
-			OS.g_object_set (cell, OS.pixbuf, ptr[0], 0);
+			OS.g_object_set (cell, OS.GTK3 ? OS.gicon : OS.pixbuf, ptr [0], 0);
 			if (ptr [0] != 0) OS.g_object_unref (ptr [0]);
 		} else {
 			ptr [0] = 0;
@@ -688,21 +688,7 @@ void createColumn (TreeColumn column, int index) {
 		column.modelIndex = modelIndex;
 	}
 	if (!searchEnabled ()) {
-		/*
-		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
-		* would prevent the user from being able to type in text to search the tree.
-		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
-		* search. This meant that even if FALSE was passed to enable_search, the user
-		* can still bring up the search pop up using the keybinding. GTK also introduced
-		* the notion of passing a -1 to gtk_set_search_column to disable searching
-		* (including the search key binding).  The fix is to use the right calls
-		* for the right version.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
-			OS.gtk_tree_view_set_search_column (handle, -1); 
-		} else {
-			OS.gtk_tree_view_set_enable_search (handle, false);
-		}
+		OS.gtk_tree_view_set_search_column (handle, -1); 
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -743,21 +729,7 @@ void createHandle (int index) {
 		OS.g_object_set (handle, OS.fixed_height_mode, true, 0);
 	}
 	if (!searchEnabled ()) {
-		/*
-		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
-		* would prevent the user from being able to type in text to search the tree.
-		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
-		* search. This meant that even if FALSE was passed to enable_search, the user
-		* can still bring up the search pop up using the keybinding. GTK also introduced
-		* the notion of passing a -1 to gtk_set_search_column to disable searching
-		* (including the search key binding).  The fix is to use the right calls
-		* for the right version.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
-			OS.gtk_tree_view_set_search_column (handle, -1); 
-		} else {
-			OS.gtk_tree_view_set_enable_search (handle, false);
-		};
+		OS.gtk_tree_view_set_search_column (handle, -1); 
 	}
 }
 
@@ -900,7 +872,7 @@ void createRenderers (long /*int*/ columnHandle, int modelIndex, boolean check, 
 	}
 
 	/* Add attributes */
-	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.pixbuf, modelIndex + CELL_PIXBUF);
+	OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.GTK3 ? OS.gicon : OS.pixbuf, modelIndex + CELL_PIXBUF);
 	if (!ownerDraw) {
 		OS.gtk_tree_view_column_add_attribute (columnHandle, pixbufRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
 		OS.gtk_tree_view_column_add_attribute (columnHandle, textRenderer, OS.cell_background_gdk, BACKGROUND_COLUMN);
@@ -1050,21 +1022,7 @@ void destroyItem (TreeColumn column) {
 		}
 	}
 	if (!searchEnabled ()) {
-		/*
-		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
-		* would prevent the user from being able to type in text to search the tree.
-		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
-		* search. This meant that even if FALSE was passed to enable_search, the user
-		* can still bring up the search pop up using the keybinding. GTK also introduced
-		* the notion of passing a -1 to gtk_set_search_column to disable searching
-		* (including the search key binding).  The fix is to use the right calls
-		* for the right version.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
-			OS.gtk_tree_view_set_search_column (handle, -1); 
-		} else {
-			OS.gtk_tree_view_set_enable_search (handle, false);
-		}
+		OS.gtk_tree_view_set_search_column (handle, -1); 
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -1485,14 +1443,8 @@ public TreeItem getItem (Point point) {
 	if (OS.gtk_tree_model_get_iter (modelHandle, iter, path [0])) {
 		boolean overExpander = false;
 		if (OS.gtk_tree_view_get_expander_column (handle) == columnHandle [0]) {
-			int [] buffer = new int [1];
 			GdkRectangle rect = new GdkRectangle ();
 			OS.gtk_tree_view_get_cell_area (handle, path [0], columnHandle [0], rect);
-			if (OS.GTK_VERSION < OS.VERSION (2, 8, 18)) {
-				OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
-				int expanderSize = buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-				rect.x += expanderSize;
-			}
 			if ((style & SWT.MIRRORED) != 0) {
 				overExpander = x > rect.x + rect.width;
 			} else {
@@ -1989,20 +1941,6 @@ long /*int*/ gtk_motion_notify_event (long /*int*/ widget, long /*int*/ event) {
 	return super.gtk_motion_notify_event (widget, event);
 }
 
-long /*int*/ gtk_popup_menu (long /*int*/ widget) {
-	long /*int*/ result = super.gtk_popup_menu (widget);
-	/*
-	* Bug in GTK.  The context menu for the typeahead in GtkTreeViewer
-	* opens in the bottom right corner of the screen when Shift+F10
-	* is pressed and the typeahead window was not visible.  The fix is
-	* to prevent the context menu from opening by stopping the default
-	* handler.
-	* 
-	* NOTE: The bug only happens in GTK 2.6.5 and lower.
-	*/
-	return OS.GTK_VERSION < OS.VERSION (2, 6, 5) ? 1 : result;
-}
-
 long /*int*/ gtk_row_activated (long /*int*/ tree, long /*int*/ path, long /*int*/ column) {
 	if (path == 0) return 0;
 	TreeItem item = null;
@@ -2431,7 +2369,14 @@ public void removeAll () {
 	if (fixAccessibility ()) {
 		ignoreAccessibility = true;
 	}
+	/**
+	 * Hack for GTK3 in order to not get cellDataFunc while clearing as it calls it for each row-deleted
+	 * and this causes AAIOB in getId as items are already cleared but the model is not yet.
+	 * By disconnecting the model from the handle while clearing no intermediate signals are emitted.
+	 */
+	OS.gtk_tree_view_set_model(handle, 0);
 	OS.gtk_tree_store_clear (modelHandle);
+	OS.gtk_tree_view_set_model(handle, modelHandle);
 	if (fixAccessibility ()) {
 		ignoreAccessibility = false;
 		OS.g_object_notify (handle, OS.model);
@@ -2439,21 +2384,7 @@ public void removeAll () {
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	
 	if (!searchEnabled ()) {
-		/*
-		* Bug in GTK. Until GTK 2.6.5, calling gtk_tree_view_set_enable_search(FALSE)
-		* would prevent the user from being able to type in text to search the tree.
-		* After 2.6.5, GTK introduced Ctrl+F as being the key binding for interactive
-		* search. This meant that even if FALSE was passed to enable_search, the user
-		* can still bring up the search pop up using the keybinding. GTK also introduced
-		* the notion of passing a -1 to gtk_set_search_column to disable searching
-		* (including the search key binding).  The fix is to use the right calls
-		* for the right version.
-		*/
-		if (OS.GTK_VERSION >= OS.VERSION (2, 6, 5)) {
-			OS.gtk_tree_view_set_search_column (handle, -1); 
-		} else {
-			OS.gtk_tree_view_set_enable_search (handle, false);
-		}
+		OS.gtk_tree_view_set_search_column (handle, -1); 
 	} else {
 		/* Set the search column whenever the model changes */
 		int firstColumn = columnCount == 0 ? FIRST_COLUMN : columns [0].modelIndex;
@@ -2746,15 +2677,6 @@ void rendererRender (long /*int*/ cell, long /*int*/ cr, long /*int*/ window, lo
 				OS.gtk_tree_view_get_cell_area (handle, path, columnHandle, rect);
 				OS.gtk_tree_view_get_background_area (handle, path, columnHandle, clipRect);
 				OS.gtk_tree_path_free (path);
-				if (OS.GTK_VERSION < OS.VERSION (2, 8, 18) && OS.gtk_tree_view_get_expander_column (handle) == columnHandle) {
-					int [] buffer = new int [1];
-					OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
-					rect.x += buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					rect.width -= buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
-					//OS.gtk_widget_style_get (handle, OS.horizontal_separator, buffer, 0);
-					//rect.x += buffer[0];
-					//rect.width -= buffer [0]; // TODO Is this required for some versions?
-				}
 				ignoreSize = true;
 				int [] contentX = new int [1], contentWidth = new int [1];
 				gtk_cell_renderer_get_preferred_size (cell, handle, contentWidth, null);
@@ -3165,7 +3087,7 @@ void setScrollWidth (long /*int*/ column, TreeItem item) {
 /**
  * Sets the receiver's selection to the given item.
  * The current selection is cleared before the new item is selected,
- * and if necessary, the receiver is scrolled to make the new selection visible.
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * <p>
  * If the item is not in the receiver, then it is ignored.
  * </p>
@@ -3192,7 +3114,7 @@ public void setSelection (TreeItem item) {
 /**
  * Sets the receiver's selection to be the given array of items.
  * The current selection is cleared before the new items are selected,
- * and if necessary, the receiver is scrolled to make the new selection visible.
+ * and if necessary the receiver is scrolled to make the new selection visible.
  * <p>
  * Items that are not in the receiver are ignored.
  * If the receiver is single-select and multiple items are specified,
@@ -3323,23 +3245,6 @@ public void setTopItem (TreeItem item) {
 	long /*int*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, false);
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, true, 0f, 0f);
-	if (OS.GTK_VERSION < OS.VERSION (2, 8, 0)) {
-		/*
-		* Bug in GTK.  According to the documentation, gtk_tree_view_scroll_to_cell
-		* should vertically scroll the cell to the top if use_align is true and row_align is 0.
-		* However, prior to version 2.8 it does not scroll at all.  The fix is to determine
-		* the new location and use gtk_tree_view_scroll_to_point.
-		* If the widget is a pinhead, calling gtk_tree_view_scroll_to_point
-		* will have no effect. Therefore, it is still neccessary to call 
-		* gtk_tree_view_scroll_to_cell.
-		*/
-		OS.gtk_widget_realize (handle);
-		GdkRectangle cellRect = new GdkRectangle ();
-		OS.gtk_tree_view_get_cell_area (handle, path, 0, cellRect);
-		int[] tx = new int[1], ty = new int[1];
-		OS.gtk_tree_view_widget_to_tree_coords(handle, cellRect.x, cellRect.y, tx, ty);
-		OS.gtk_tree_view_scroll_to_point (handle, -1, ty[0]);
-	}
 	OS.gtk_tree_path_free (path);
 }
 

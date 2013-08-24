@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2011 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -43,42 +43,6 @@ public class nsIRequest extends nsISupports {
 
 	public int GetName(long /*int*/ aName) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aName);
-	}
-
-	public int IsPending(int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), _retval);
-	}
-
-	public int GetStatus(long /*int*/[] aStatus) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aStatus);
-	}
-
-	public int Cancel(int aStatus) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aStatus);
-	}
-
-	public int Suspend() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress());
-	}
-
-	public int Resume() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress());
-	}
-
-	public int GetLoadGroup(long /*int*/[] aLoadGroup) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aLoadGroup);
-	}
-
-	public int SetLoadGroup(long /*int*/ aLoadGroup) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aLoadGroup);
-	}
-
-	public int GetLoadFlags(long /*int*/[] aLoadFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aLoadFlags);
-	}
-
-	public int SetLoadFlags(int aLoadFlags) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), aLoadFlags);
 	}
 
 	public static final int LOAD_NORMAL = 0;

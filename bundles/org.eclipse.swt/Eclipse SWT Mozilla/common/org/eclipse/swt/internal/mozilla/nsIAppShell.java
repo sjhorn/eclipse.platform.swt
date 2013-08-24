@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2013 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -36,7 +36,7 @@ public class nsIAppShell extends nsISupports {
 
 	public static final nsID NS_IAPPSHELL_IID =
 		new nsID(NS_IAPPSHELL_IID_STR);
-
+	
 	public nsIAppShell(long /*int*/ address) {
 		super(address);
 	}
@@ -45,31 +45,7 @@ public class nsIAppShell extends nsISupports {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), argc, argv);
 	}
 
-	public int Run() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress());
-	}
-
 	public int Spinup() {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress());
-	}
-
-	public int Spindown() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress());
-	}
-
-	public int ListenToEventQueue(long /*int*/ aQueue, int aListen) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aQueue, aListen);
-	}
-
-	public int GetNativeEvent(long /*int*/ aRealEvent, long /*int*/[] aEvent) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aRealEvent, aEvent);
-	}
-
-	public int DispatchNativeEvent(int aRealEvent, long /*int*/ aEvent) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aRealEvent, aEvent);
-	}
-
-	public int Exit() {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress());
 	}
 }

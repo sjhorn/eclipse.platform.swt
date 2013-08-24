@@ -1,6 +1,6 @@
 #!/bin/sh
 #*******************************************************************************
-# Copyright (c) 2000, 2011 IBM Corporation and others.
+# Copyright (c) 2000, 2012 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License v1.0
 # which accompanies this distribution, and is available at
@@ -455,12 +455,14 @@ if [ ${MODEL} = 'x86' -a ${SWT_OS} = 'linux' ]; then
 	export SWT_LFLAGS SWT_PTR_CFLAGS
 fi
 
-if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparc64" -a ${MODEL} != 'ia64' ]; then
+if [ x`pkg-config --exists gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0 && echo YES` = "xYES"  -a ${MODEL} != "sparc64" -a ${MODEL} != 'ia64' -a ${GTK_VERSION} != '3.0' ]; then
 	echo "libgnomeui-2.0 found, compiling SWT program support using GNOME"
 	MAKE_GNOME=make_gnome
 else
-	echo "libgnome-2.0 and libgnomeui-2.0 not found:"
-	echo "    *** SWT Program support for GNOME will not be compiled."
+	if [ ${GTK_VERSION} != '3.0' ]; then
+		echo "libgnome-2.0 and libgnomeui-2.0 not found:"
+		echo "    *** SWT Program support for GNOME will not be compiled."
+	fi
 fi
 
 if [ x`pkg-config --exists cairo && echo YES` = "xYES" ]; then

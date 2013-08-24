@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2005, 2012 IBM Corporation and others.
+ * Copyright (c) 2005, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -24,6 +24,7 @@ class MozillaDelegate {
 	Vector childWindows = new Vector (9);
 	static long /*int*/ MozillaProc;
 	static Callback SubclassProc;
+	static Callback SubclassProc_UpdateUIState;
 	
 MozillaDelegate (Browser browser) {
 	super ();
@@ -88,6 +89,10 @@ static boolean needsSpinup () {
 	return false;
 }
 
+static boolean supportsXULRunner17 () {
+	return true;
+}
+
 static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 	int byteCount;
 	char[] chars = new char[string.length()];
@@ -108,11 +113,29 @@ static byte[] wcsToMbcs (String codePage, String string, boolean terminate) {
 
 static long /*int*/ windowProc (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
 	switch ((int)/*64*/msg) {
+		case OS.WM_UPDATEUISTATE:
+			/*
+			 * In XULRunner 17, calling the default windowProc for WM_UPDATEUISTATE message
+			 * terminates the program. Workaround is to prevent the call to default windowProc.
+			 */
+			return 0;
 		case OS.WM_ERASEBKGND:
 			RECT rect = new RECT ();
 			OS.GetClientRect (hwnd, rect);
 			OS.FillRect (wParam, rect, OS.GetSysColorBrush (OS.COLOR_WINDOW));
 			break;
+	}
+	return OS.CallWindowProc (MozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
+}
+
+static long /*int*/ windowProc1 (long /*int*/ hwnd, long /*int*/ msg, long /*int*/ wParam, long /*int*/ lParam) {
+	switch ((int)/*64*/msg) {
+		case OS.WM_UPDATEUISTATE:
+			/*
+			 * In XULRunner 17, calling the default windowProc for WM_UPDATEUISTATE message
+			 * terminates the program. Workaround is to prevent the call to default windowProc.
+			 */
+			return 0;
 	}
 	return OS.CallWindowProc (MozillaProc, hwnd, (int)/*64*/msg, wParam, lParam);
 }
@@ -231,15 +254,25 @@ void init () {
 }
 
 void onDispose (long /*int*/ embedHandle) {
-	removeWindowSubclass ();
+	if (SubclassProc == null && SubclassProc_UpdateUIState == null) return;
+	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
+	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
 	childWindows = null;
 	browser = null;
 }
 
 void removeWindowSubclass () {
-	if (SubclassProc == null) return;
 	long /*int*/ hwndChild = OS.GetWindow (browser.handle, OS.GW_CHILD);
-	OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
+	if (Mozilla.IsPre_17) {
+		if (SubclassProc != null) {
+			OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, MozillaProc);
+		}
+	} else {
+		if (SubclassProc_UpdateUIState == null) {
+			SubclassProc_UpdateUIState = new Callback (MozillaDelegate.class, "windowProc1", 4); //$NON-NLS-1$
+		}
+		OS.SetWindowLongPtr (hwndChild, OS.GWL_WNDPROC, SubclassProc_UpdateUIState.getAddress ());
+	}
 }
 
 boolean sendTraverse () {

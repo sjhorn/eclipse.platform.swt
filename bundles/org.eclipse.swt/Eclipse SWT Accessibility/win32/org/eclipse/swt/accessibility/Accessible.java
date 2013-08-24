@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -941,8 +941,10 @@ public class Accessible {
 	public void removeAccessibleListener(AccessibleListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleListeners != null) accessibleListeners.removeElement(listener);
-		if (accessibleListeners.isEmpty()) accessibleListeners = null;
+		if (accessibleListeners != null) {
+			accessibleListeners.removeElement(listener);
+			if (accessibleListeners.isEmpty()) accessibleListeners = null;
+		}
 	}
 
 	/**
@@ -967,8 +969,10 @@ public class Accessible {
 	public void removeAccessibleControlListener(AccessibleControlListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleControlListeners != null) accessibleControlListeners.removeElement(listener);
-		if (accessibleControlListeners.isEmpty()) accessibleControlListeners = null;
+		if (accessibleControlListeners != null) {
+			accessibleControlListeners.removeElement(listener);
+			if (accessibleControlListeners.isEmpty()) accessibleControlListeners = null;
+		}
 	}
 
 	/**
@@ -997,11 +1001,15 @@ public class Accessible {
 		checkWidget ();
 		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 		if (listener instanceof AccessibleTextExtendedListener) {
-			if (accessibleTextExtendedListeners != null) accessibleTextExtendedListeners.removeElement (listener);
-			if (accessibleTextExtendedListeners.isEmpty()) accessibleTextExtendedListeners = null;
+			if (accessibleTextExtendedListeners != null) {
+				accessibleTextExtendedListeners.removeElement (listener);
+				if (accessibleTextExtendedListeners.isEmpty()) accessibleTextExtendedListeners = null;
+			}
 		} else {
-			if (accessibleTextListeners != null) accessibleTextListeners.removeElement (listener);
-			if (accessibleTextListeners.isEmpty()) accessibleTextListeners = null;
+			if (accessibleTextListeners != null) {
+				accessibleTextListeners.removeElement (listener);
+				if (accessibleTextListeners.isEmpty()) accessibleTextListeners = null;
+			}
 		}
 	}
 
@@ -1029,8 +1037,10 @@ public class Accessible {
 	public void removeAccessibleActionListener(AccessibleActionListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleActionListeners != null) accessibleActionListeners.removeElement(listener);
-		if (accessibleActionListeners.isEmpty()) accessibleActionListeners = null;
+		if (accessibleActionListeners != null) {
+			accessibleActionListeners.removeElement(listener);
+			if (accessibleActionListeners.isEmpty()) accessibleActionListeners = null;
+		}
 	}
 
 	/**
@@ -1057,8 +1067,10 @@ public class Accessible {
 	public void removeAccessibleEditableTextListener(AccessibleEditableTextListener listener) {
 	    checkWidget();
 	    if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	    if (accessibleEditableTextListeners != null) accessibleEditableTextListeners.removeElement(listener);
-		if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
+	    if (accessibleEditableTextListeners != null) {
+	    	accessibleEditableTextListeners.removeElement(listener);
+	    	if (accessibleEditableTextListeners.isEmpty()) accessibleEditableTextListeners = null;
+	    }
 	}
 	
 	/**
@@ -1085,8 +1097,10 @@ public class Accessible {
 	public void removeAccessibleHyperlinkListener(AccessibleHyperlinkListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleHyperlinkListeners != null) accessibleHyperlinkListeners.removeElement(listener);
-		if (accessibleHyperlinkListeners.isEmpty()) accessibleHyperlinkListeners = null;
+		if (accessibleHyperlinkListeners != null) {
+			accessibleHyperlinkListeners.removeElement(listener);
+			if (accessibleHyperlinkListeners.isEmpty()) accessibleHyperlinkListeners = null;
+		}
 	}
 
 	/**
@@ -1113,8 +1127,10 @@ public class Accessible {
 	public void removeAccessibleTableListener(AccessibleTableListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableListeners != null) accessibleTableListeners.removeElement(listener);
-		if (accessibleTableListeners.isEmpty()) accessibleTableListeners = null;
+		if (accessibleTableListeners != null) {
+			accessibleTableListeners.removeElement(listener);
+			if (accessibleTableListeners.isEmpty()) accessibleTableListeners = null;
+		}
 	}
 
 	/**
@@ -1141,8 +1157,10 @@ public class Accessible {
 	public void removeAccessibleTableCellListener(AccessibleTableCellListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleTableCellListeners != null) accessibleTableCellListeners.removeElement(listener);
-		if (accessibleTableCellListeners.isEmpty()) accessibleTableCellListeners = null;
+		if (accessibleTableCellListeners != null) {
+			accessibleTableCellListeners.removeElement(listener);
+			if (accessibleTableCellListeners.isEmpty()) accessibleTableCellListeners = null;
+		}
 	}
 
 	/**
@@ -1169,8 +1187,10 @@ public class Accessible {
 	public void removeAccessibleValueListener(AccessibleValueListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleValueListeners != null) accessibleValueListeners.removeElement(listener);
-		if (accessibleValueListeners.isEmpty()) accessibleValueListeners = null;
+		if (accessibleValueListeners != null) {
+			accessibleValueListeners.removeElement(listener);
+			if (accessibleValueListeners.isEmpty()) accessibleValueListeners = null;
+		}
 	}
 
 	/**
@@ -1197,8 +1217,10 @@ public class Accessible {
 	public void removeAccessibleAttributeListener(AccessibleAttributeListener listener) {
 		checkWidget();
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		if (accessibleAttributeListeners != null) accessibleAttributeListeners.removeElement(listener);
-		if (accessibleAttributeListeners.isEmpty()) accessibleAttributeListeners = null;
+		if (accessibleAttributeListeners != null) {
+			accessibleAttributeListeners.removeElement(listener);
+			if (accessibleAttributeListeners.isEmpty()) accessibleAttributeListeners = null;
+		}
 	}
 
 	/**
@@ -1272,6 +1294,7 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, Object eventData) {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (!UseIA2) return;
 		if (DEBUG) print(this + ".NotifyWinEvent " + getEventString(event) + " hwnd=" + control.handle + " childID=" + eventChildID());
 		switch (event) {
@@ -1395,6 +1418,7 @@ public class Accessible {
 	 */
 	public void sendEvent(int event, Object eventData, int childID) {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (!UseIA2) return;
 		int osChildID = childID == ACC.CHILDID_SELF ? eventChildID() : childIDToOs(childID);
 		if (DEBUG) print(this + ".NotifyWinEvent " + getEventString(event) + " hwnd=" + control.handle + " childID=" + osChildID);
@@ -1430,6 +1454,7 @@ public class Accessible {
 	 */
 	public void selectionChanged () {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_SELECTIONWITHIN hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, eventChildID());
 	}
@@ -1447,6 +1472,7 @@ public class Accessible {
 	 */
 	public void setFocus(int childID) {
 		checkWidget();
+		if (refCount <= 1) return;
 		int osChildID = childID == ACC.CHILDID_SELF ? eventChildID() : childIDToOs(childID);
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_FOCUS hwnd=" + control.handle + " childID=" + osChildID);
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, osChildID);
@@ -1467,6 +1493,7 @@ public class Accessible {
 	 */
 	public void textCaretMoved (int index) {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_LOCATIONCHANGE hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_LOCATIONCHANGE, control.handle, COM.OBJID_CARET, eventChildID());
 		if (!UseIA2) return;
@@ -1495,6 +1522,7 @@ public class Accessible {
 	 */
 	public void textChanged (int type, int startIndex, int length) {
 		checkWidget();
+		if (refCount <= 1) return;
 		AccessibleTextEvent event = new AccessibleTextEvent(this);
 		event.start = startIndex;
 		event.end = startIndex + length;
@@ -1530,6 +1558,7 @@ public class Accessible {
 	 */
 	public void textSelectionChanged () {
 		checkWidget();
+		if (refCount <= 1) return;
 		if (DEBUG) print(this + ".NotifyWinEvent EVENT_OBJECT_VALUECHANGE hwnd=" + control.handle + " childID=" + eventChildID());
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_VALUECHANGE, control.handle, COM.OBJID_CLIENT, eventChildID());
 	}
@@ -2204,7 +2233,6 @@ public class Accessible {
 	
 	/* IAccessible::get_accDescription([in] varChild, [out] pszDescription) */
 	int get_accDescription(long /*int*/ varChild, long /*int*/ pszDescription) {
-		if (DEBUG) print(this + ".IAccessible::get_accDescription");
 		/* 
 		 * MSAA: "The accDescription property is not supported in the transition to
 		 * UI Automation. MSAA servers and applications should not use it."
@@ -2224,7 +2252,10 @@ public class Accessible {
 			code = iaccessible.get_accDescription(varChild, pszDescription);
 			if (code == COM.E_INVALIDARG) code = COM.S_FALSE; // proxy doesn't know about app childID
 			// TEMPORARY CODE - process tree even if there are no apps listening
-			if (accessibleListenersSize() == 0 && !(control instanceof Tree)) return code;
+			if (accessibleListenersSize() == 0 && !(control instanceof Tree)) {
+				if (DEBUG) print(this + ".IAccessible::get_accDescription(" + v.lVal + ") returning super" + hresult(code));
+				return code;
+			}
 			if (code == COM.S_OK) {
 				long /*int*/[] pDescription = new long /*int*/[1];
 				COM.MoveMemory(pDescription, pszDescription, OS.PTR_SIZEOF);
@@ -2272,6 +2303,7 @@ public class Accessible {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
 			listener.getDescription(event);
 		}
+		if (DEBUG) print(this + ".IAccessible::get_accDescription(" + v.lVal + ") returning " + event.result + hresult(event.result == null ? code : event.result.length() == 0 ? COM.S_FALSE : COM.S_OK));
 		if (event.result == null) return code;
 		if (event.result.length() == 0) return COM.S_FALSE;
 		setString(pszDescription, event.result);
@@ -2952,32 +2984,34 @@ public class Accessible {
 
 	/* IAccessible2::get_groupPosition([out] pGroupLevel, [out] pSimilarItemsInGroup, [out] pPositionInGroup) */
 	int get_groupPosition(long /*int*/ pGroupLevel, long /*int*/ pSimilarItemsInGroup, long /*int*/ pPositionInGroup) {
-		// TODO: handle where possible - maybe add AccessibleGroup later
-		//get the role
-		//if it has role tree, then the level is the value else 0 (for N/A)
-		int groupLevel = 0;
-		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
-		//get the children of the parent
-		//count all children with the same role, if none, then 0 (for N/A)
-		//find this control's 1-based index in the same-type children of the parent (0 for N/A)
-		int similarItemsInGroup = 0;
-		int positionInGroup = 0;
-		if (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) {
-			/* We currently only determine position and count for radio buttons. */
-			Control [] children = control.getParent().getChildren();
-			positionInGroup = 1;
-			similarItemsInGroup = 1;
-			for (int i = 0; i < children.length; i++) {
-				Control child = children[i];
-				if (child instanceof Button && ((child.getStyle() & SWT.RADIO) != 0)) {
-					if (child == control) positionInGroup = similarItemsInGroup;
-					else similarItemsInGroup++;
+		AccessibleAttributeEvent event = new AccessibleAttributeEvent(this);
+		event.groupLevel = event.groupCount = event.groupIndex = -1;
+		for (int i = 0; i < accessibleAttributeListenersSize(); i++) {
+			AccessibleAttributeListener listener = (AccessibleAttributeListener) accessibleAttributeListeners.elementAt(i);
+			listener.getAttributes(event);
+		}
+		int groupLevel = (event.groupLevel != -1) ? event.groupLevel : 0;
+		int similarItemsInGroup = (event.groupCount != -1) ? event.groupCount : 0;
+		int positionInGroup = (event.groupIndex != -1) ? event.groupIndex : 0;
+		if (similarItemsInGroup == 0 && positionInGroup == 0) {
+			/* Determine position and count for radio buttons. */
+			if (control instanceof Button && ((control.getStyle() & SWT.RADIO) != 0)) {
+				Control [] children = control.getParent().getChildren();
+				positionInGroup = 1;
+				similarItemsInGroup = 1;
+				for (int i = 0; i < children.length; i++) {
+					Control child = children[i];
+					if (child instanceof Button && ((child.getStyle() & SWT.RADIO) != 0)) {
+						if (child == control) positionInGroup = similarItemsInGroup;
+						else similarItemsInGroup++;
+					}
 				}
 			}
 		}
+		COM.MoveMemory(pGroupLevel, new int [] { groupLevel }, 4);
 		COM.MoveMemory(pSimilarItemsInGroup, new int [] { similarItemsInGroup }, 4);
 		COM.MoveMemory(pPositionInGroup, new int [] { positionInGroup }, 4);
-		if (DEBUG) print(this + ".IAccessible2::get_groupPosition() returning" + hresult(groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 ? COM.S_FALSE : COM.S_OK));
+		if (DEBUG) print(this + ".IAccessible2::get_groupPosition() returning level=" + groupLevel + ", count=" + similarItemsInGroup + ", index=" + positionInGroup + hresult(groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0 ? COM.S_FALSE : COM.S_OK));
 		if (groupLevel == 0 && similarItemsInGroup == 0 && positionInGroup == 0) return COM.S_FALSE;
 		return COM.S_OK;
 	}

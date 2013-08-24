@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2007, 2011 IBM Corporation and others.
+ * Copyright (c) 2007, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -534,16 +534,14 @@ LRESULT WM_KEYDOWN (long /*int*/ wParam, long /*int*/ lParam) {
 				sendEvent (SWT.ImeComposition, event);
 			}
 			if (event.text != null && event.text.length() > 0) {
+				int length = event.text.length();
+	            if (length > 1) {
+	            	event.end = event.start + 1;
+	            }
 				long /*int*/ hwnd = parent.handle;
 				long /*int*/ hIMC = OS.ImmGetContext (hwnd);
-				long /*int*/ hHeap = OS.GetProcessHeap ();
 				TCHAR buffer = new TCHAR (0, event.text, true);
-				int byteCount = buffer.length () * TCHAR.sizeof;
-				long /*int*/ pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-				OS.MoveMemory (pszText, buffer, byteCount);
-				long /*int*/ [] lpData = new long /*int*/ []{pszText};
-				long /*int*/ rc = OS.ImmEscape(hKL, hIMC, OS.IME_ESC_HANJA_MODE, lpData); 
-				if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+				long /*int*/ rc = OS.ImmEscape(hKL, hIMC, OS.IME_ESC_HANJA_MODE, buffer); 
 				if (rc != 0) {
 					sendEvent (SWT.ImeComposition, event);
 				}

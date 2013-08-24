@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2011 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -193,17 +193,15 @@ public void addModifyListener (ModifyListener listener) {
 /**
  * Adds a segment listener.
  * <p>
- * A <code>SegmentEvent</code> is sent whenever text content is being modified. The user can 
- * customize appearance of text by indicating certain characters to be inserted
+ * A <code>SegmentEvent</code> is sent whenever text content is being modified or
+ * a segment listener is added or removed. You can 
+ * customize the appearance of text by indicating certain characters to be inserted
  * at certain text offsets. This may be used for bidi purposes, e.g. when
  * adjacent segments of right-to-left text should not be reordered relative to
  * each other. 
- * E.g., Multiple Java string literals in a right-to-left language
+ * E.g., multiple Java string literals in a right-to-left language
  * should generally remain in logical order to each other, that is, the
  * way they are stored.
- * <br>
- * After SegmentListener is added, user may call <code>setText(String)</code>
- * for segments to take effect.
  * </p>
  * <p>
  * <b>Warning</b>: This API is currently only implemented on Windows and GTK.
@@ -1213,7 +1211,12 @@ public String getText (int start, int end) {
  * The text for a text widget is the characters in the widget, or
  * a zero-length array if this has never been set.
  * </p>
- *
+ * <p>
+ * Note: Use the API to protect the text, for example, when widget is used as
+ * a password field. However, the text can't be protected if Segment listener
+ * is added to the widget.
+ * </p>
+ * 
  * @return a character array that contains the widget's text
  *
  * @exception SWTException <ul>
@@ -1502,10 +1505,6 @@ public void removeModifyListener (ModifyListener listener) {
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.
- * <p>
- * After SegmentListener is removed, user may call <code>setText(String)</code>
- * for segments to take effect.
- * </p>
  *
  * @param listener the listener which should no longer be notified
  *
@@ -2111,7 +2110,12 @@ public void setText (String string) {
  * Sets the contents of the receiver to the characters in the array. If the receiver
  * has style <code>SWT.SINGLE</code> and the argument contains multiple lines of text
  * then the result of this operation is undefined and may vary between platforms.
- *
+ * <p>
+ * Note: Use the API to protect the text, for example, when widget is used as
+ * a password field. However, the text can't be protected if Verify or
+ * Segment listener is added to the widget.
+ * </p>
+ * 
  * @param text a character array that contains the new text
  *
  * @exception IllegalArgumentException <ul>

@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.gtk.*;
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
- * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT, FLIP_TEXT_DIRECTION</dd>
  * <dt><b>Events:</b>
  * <dd>DragDetect, FocusIn, FocusOut, Help, KeyDown, KeyUp, MenuDetect, MouseDoubleClick, MouseDown, MouseEnter,
  *     MouseExit, MouseHover, MouseUp, MouseMove, MouseWheel, MouseHorizontalWheel, MouseVerticalWheel, Move,
@@ -268,6 +268,19 @@ public int getOrientation () {
 	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
+/**
+ * Returns the text direction of the receiver, which will be one of the
+ * constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
+ *
+ * @return the text direction style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.102
+ */
 public int getTextDirection() {
 	checkWidget ();
 	/* return the widget orientation */
@@ -974,7 +987,17 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 			allocation.width = width;
 			allocation.height = height;
 		}
-		OS.gtk_widget_size_allocate (topHandle, allocation);
+		/*
+		 * The widget needs to be shown before its size is allocated
+		 * in GTK 3.8 otherwise its allocation return 0
+		 */
+		if (OS.GTK_VERSION >= OS.VERSION (3, 8, 0) && !OS.gtk_widget_get_visible(handle))  {
+			OS.gtk_widget_show(handle);
+			OS.gtk_widget_size_allocate (topHandle, allocation);
+			OS.gtk_widget_hide(handle);
+		} else {
+			OS.gtk_widget_size_allocate (topHandle, allocation);
+		}
 	}
 	/*
 	* Bug in GTK.  Widgets cannot be sized smaller than 1x1.
@@ -4385,6 +4408,9 @@ void setInitialBounds () {
 		}
 		if (OS.GTK_VERSION >= OS.VERSION (2, 18, 0)) {
 			allocation.y = 0;
+			if (OS.GTK3) {
+				OS.gtk_widget_set_visible(topHandle, true);
+			}
 			OS.gtk_widget_set_allocation(topHandle, allocation);
 		} else {
 			OS.GTK_WIDGET_SET_Y (topHandle, 0);
@@ -4620,6 +4646,30 @@ boolean setTabItemFocus (boolean next) {
 	return forceFocus ();
 }
 
+/**
+ * Sets the base text direction (a.k.a. "paragraph direction") of the receiver,
+ * which must be one of the constants <code>SWT.LEFT_TO_RIGHT</code> or
+ * <code>SWT.RIGHT_TO_LEFT</code>.
+ * <p>
+ * <code>setOrientation</code> would override this value with the text direction
+ * that is consistent with the new orientation.
+ * </p>
+ * <p>
+ * <b>Warning</b>: This API is currently only implemented on Windows.
+ * It doesn't set the base text direction on GTK and Cocoa.
+ * </p>
+ *
+ * @param textDirection the base text direction style
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see SWT#FLIP_TEXT_DIRECTION
+ * 
+ * @since 3.102
+ */
 public void setTextDirection(int textDirection) {
 	checkWidget ();
 }
@@ -5400,25 +5450,6 @@ long /*int*/ windowProc (long /*int*/ handle, long /*int*/ arg0, long /*int*/ us
 						if (window != paintWindow) break;
 						drawBackground(control, window, gdkEvent.region, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
 					}
-				}
-			}
-			if (OS.GTK_VERSION <  OS.VERSION (2, 8, 0)) {
-				Control control = findBackgroundControl ();
-				if (control != null && control.backgroundImage != null) {
-					GdkEventExpose gdkEvent = new GdkEventExpose ();
-					OS.memmove (gdkEvent, arg0, GdkEventExpose.sizeof);
-					long /*int*/ paintWindow = paintWindow();
-					long /*int*/ window = gdkEvent.window;
-					if (window != paintWindow) break;
-					long /*int*/ gdkGC = OS.gdk_gc_new (window);
-					OS.gdk_gc_set_clip_region (gdkGC, gdkEvent.region);
-					int[] dest_x = new int[1], dest_y = new int[1];
-					OS.gtk_widget_translate_coordinates (paintHandle (), control.paintHandle (), 0, 0, dest_x, dest_y);
-					OS.gdk_gc_set_fill (gdkGC, OS.GDK_TILED);
-					OS.gdk_gc_set_ts_origin (gdkGC, -dest_x [0], -dest_y [0]);
-					OS.gdk_gc_set_tile (gdkGC, control.backgroundImage.pixmap); 
-					OS.gdk_draw_rectangle (window, gdkGC, 1, gdkEvent.area_x, gdkEvent.area_y, gdkEvent.area_width, gdkEvent.area_height);
-					OS.g_object_unref (gdkGC);
 				}
 			}
 			break;

@@ -137,7 +137,11 @@ void createHandle (int index) {
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_AUTOMATIC);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
-		OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
+		if (OS.GTK_VERSION < OS.VERSION(3, 8, 0)) {
+			OS.gtk_scrolled_window_add_with_viewport (scrolledHandle, handle);
+		} else {
+			OS.gtk_container_add(scrolledHandle, handle);
+		}
 		long /*int*/ viewport = OS.gtk_bin_get_child (scrolledHandle);
 		OS.gtk_viewport_set_shadow_type (viewport, OS.GTK_SHADOW_NONE);
 	} else {
@@ -457,11 +461,7 @@ void setScrollbar () {
 	int width = allocation.width - spacing * 2;
 	if (policy == OS.GTK_POLICY_ALWAYS) {
 		long /*int*/ vHandle = 0;
-		if (OS.GTK_VERSION < OS.VERSION(2, 8, 0)) {
-			vHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
-		} else {
-			vHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
-		}
+		vHandle = OS.gtk_scrolled_window_get_vscrollbar (scrolledHandle);
 		GtkRequisition requisition = new GtkRequisition ();
 		gtk_widget_get_preferred_size (vHandle, requisition);
 		width -= requisition.width;

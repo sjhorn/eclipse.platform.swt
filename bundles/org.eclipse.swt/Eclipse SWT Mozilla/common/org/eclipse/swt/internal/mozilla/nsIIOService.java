@@ -22,7 +22,7 @@
  *
  * IBM
  * -  Binding to permit interfacing between Mozilla and SWT
- * -  Copyright (C) 2003, 2008 IBM Corp.  All Rights Reserved.
+ * -  Copyright (C) 2003, 2012 IBM Corp.  All Rights Reserved.
  *
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
@@ -41,43 +41,7 @@ public class nsIIOService extends nsISupports {
 		super(address);
 	}
 
-	public int GetProtocolHandler(byte[] aScheme, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 1, getAddress(), aScheme, _retval);
-	}
-
-	public int GetProtocolFlags(byte[] aScheme, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 2, getAddress(), aScheme, _retval);
-	}
-
 	public int NewURI(long /*int*/ aSpec, byte[] aOriginCharset, long /*int*/ aBaseURI, long /*int*/[] _retval) {
 		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 3, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
-	}
-
-	public int NewFileURI(long /*int*/ aFile, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 4, getAddress(), aFile, _retval);
-	}
-
-	public int NewChannelFromURI(long /*int*/ aURI, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 5, getAddress(), aURI, _retval);
-	}
-
-	public int NewChannel(long /*int*/ aSpec, byte[] aOriginCharset, long /*int*/ aBaseURI, long /*int*/[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 6, getAddress(), aSpec, aOriginCharset, aBaseURI, _retval);
-	}
-
-	public int GetOffline(int[] aOffline) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 7, getAddress(), aOffline);
-	}
-
-	public int SetOffline(int aOffline) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 8, getAddress(), aOffline);
-	}
-
-	public int AllowPort(int aPort, byte[] aScheme, int[] _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 9, getAddress(), aPort, aScheme, _retval);
-	}
-
-	public int ExtractScheme(long /*int*/ urlString, long /*int*/ _retval) {
-		return XPCOM.VtblCall(nsISupports.LAST_METHOD_ID + 10, getAddress(), urlString, _retval);
 	}
 }
