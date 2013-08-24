@@ -118,7 +118,7 @@ import org.eclipse.swt.internal.cocoa.*;
  * @noextend This class is not intended to be subclassed by clients.
  */
 public class Shell extends Decorations {
-	NSWindow window;
+	public NSWindow window;
 	SWTWindowDelegate windowDelegate;
 	long /*int*/ hostWindowClass;
 	NSWindow hostWindow;

@@ -3444,6 +3444,19 @@ public static final native void CGContextSetLineWidth(long /*int*/ c, double /*f
  */
 public static final native void CGContextSetMiterLimit(long /*int*/ c, double /*float*/ limit);
 /**
+ * @param context cast=(CGContextRef)
+ * @param offset flags=struct
+ * @param blur cast=(CGFloat)
+ */
+public static final native void CGContextSetShadow(long /*int*/ context, CGSize offset, double /*float*/ blur);
+/**
+ * @param context cast=(CGContextRef)
+ * @param offset flags=struct
+ * @param blur cast=(CGFloat)
+ * @param color cast=(CGColorRef)
+ */
+public static final native void CGContextSetShadowWithColor(long /*int*/ context, CGSize offset, double /*float*/ blur, long /*int*/ color);
+/**
  * @param c cast=(CGContextRef)
  * @param shouldAntialias cast=(_Bool)
  */

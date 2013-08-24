@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2012 IBM Corporation and others.
+ * Copyright (c) 2000, 2013 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -1524,6 +1524,34 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetMiterLimit)
 	OS_NATIVE_ENTER(env, that, CGContextSetMiterLimit_FUNC);
 	CGContextSetMiterLimit((CGContextRef)arg0, (CGFloat)arg1);
 	OS_NATIVE_EXIT(env, that, CGContextSetMiterLimit_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetShadow
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetShadow)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jfloatDouble arg2)
+{
+	CGSize _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextSetShadow_FUNC);
+	if (arg1) if ((lparg1 = getCGSizeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	CGContextSetShadow((CGContextRef)arg0, *lparg1, (CGFloat)arg2);
+fail:
+	if (arg1 && lparg1) setCGSizeFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetShadow_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetShadowWithColor
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetShadowWithColor)
+	(JNIEnv *env, jclass that, jintLong arg0, jobject arg1, jfloatDouble arg2, jintLong arg3)
+{
+	CGSize _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextSetShadowWithColor_FUNC);
+	if (arg1) if ((lparg1 = getCGSizeFields(env, arg1, &_arg1)) == NULL) goto fail;
+	CGContextSetShadowWithColor((CGContextRef)arg0, *lparg1, (CGFloat)arg2, (CGColorRef)arg3);
+fail:
+	if (arg1 && lparg1) setCGSizeFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetShadowWithColor_FUNC);
 }
 #endif
 
